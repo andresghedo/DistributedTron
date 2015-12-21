@@ -6,6 +6,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
 
+import registration.InterfaceRemoteMethodRegistration;
+
 public class RmiClient {
 	
 	public static void main(String[] args) throws RemoteException, NotBoundException {
@@ -16,10 +18,12 @@ public class RmiClient {
 		int x;
 		System.out.println("NEL CLIENT");
 		InterfaceRemoteMethod squareServer = null;
+		InterfaceRemoteMethodRegistration registrationServer = null;
 		//squareServer = (ISquareRoot) Naming.lookup ("rmi://"+IP_SERVER+"/RMISquareRoot");
 		Registry register = LocateRegistry.getRegistry(IP_SERVER, PORT);
 		squareServer = (InterfaceRemoteMethod) register.lookup("MethodService");
-		   
+		registrationServer = (InterfaceRemoteMethodRegistration) register.lookup("RegistrationService");    
+		registrationServer.incrementPlayers();
 		Scanner scanner=new Scanner(System.in);
     	while (true) {
     		System.out.println("[INPUT] Insert code operations:");

@@ -17,6 +17,7 @@ public class RmiServerRegistration extends UnicastRemoteObject implements Interf
 	}
 	
 	public void incrementPlayers() {
+		System.out.println("[DEBUG REGISTRAZIONE] Incremento del numero di players");
         this.room.incrementCurrentPlayers();
     }
     
