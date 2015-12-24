@@ -3,6 +3,8 @@ package registration;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import network.Host;
+
 /* 
  * Interfaccia dei metodi remoti che vengono resi accessibili dall'esterno,
  * rendendoli chiamabili da altri host remoti.
@@ -10,6 +12,6 @@ import java.rmi.RemoteException;
  * di tutti i giocatori.
  */
 public interface InterfaceRemoteMethodRegistration extends Remote {
-	void incrementPlayers() throws RemoteException;
+	void addPlayer(Host host) throws RemoteException;
 	int getCurrentPlayers() throws RemoteException;
 }

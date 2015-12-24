@@ -7,6 +7,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import network.Host;
 
 public class RmiServerRegistration extends UnicastRemoteObject implements InterfaceRemoteMethodRegistration {
 
@@ -16,9 +17,10 @@ public class RmiServerRegistration extends UnicastRemoteObject implements Interf
 		this.room = new Room(sp);
 	}
 	
-	public void incrementPlayers() {
-		System.out.println("[DEBUG REGISTRAZIONE] Incremento del numero di players");
-        this.room.incrementCurrentPlayers();
+	public void addPlayer(Host host) {
+		//System.out.println("a");
+		System.out.println("[DEBUG REGISTRAZIONE] Aggiunto il player con host IP: "+host.getIP()+"  e PORT:"+host.getPort()+"\n");
+        this.room.addHost(host);
     }
     
     public int getCurrentPlayers() {

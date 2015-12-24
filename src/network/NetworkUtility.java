@@ -50,8 +50,12 @@ public class NetworkUtility {
             if (iface.getName() != "lo") {
                 for(Enumeration<InetAddress> addresses = iface.getInetAddresses(); addresses.hasMoreElements();){
                     InetAddress address = addresses.nextElement();
-                    if(address instanceof Inet4Address)
-                        return address.getHostAddress();
+
+                    if(address instanceof Inet4Address){
+                    	String strHostIp = address.getHostAddress();
+                		if (strHostIp.startsWith("192.168"))
+                			return strHostIp;
+                    }
                 }
             }
         }

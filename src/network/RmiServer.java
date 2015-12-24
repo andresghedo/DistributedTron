@@ -31,8 +31,8 @@ public class RmiServer extends UnicastRemoteObject implements InterfaceRemoteMet
     public static void main(String[] args) throws UnknownHostException, SocketException, RemoteException, AlreadyBoundException {
         
     	System.out.println("Numero di giocatori per iniziare: "+Integer.parseInt(args[0]));
-        String ipserver = NetworkUtility.getInstance().getHostAddress();
-        System.out.println("[SERVER] IP : " + ipserver + "  in ascolto sulla porta "+PORT+"....");
+    	String ipserver = NetworkUtility.getInstance().getHostAddress();
+    	System.out.println("[SERVER] IP : " + ipserver + "  in ascolto sulla porta "+PORT+"....");
         System.setProperty("java.rmi.server.hostname", ipserver);
         System.setProperty("java.rmi.disableHttp", "true");
         InterfaceRemoteMethod server = new RmiServer();
