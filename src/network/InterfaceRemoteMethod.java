@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
  */
 public interface InterfaceRemoteMethod extends Remote {
 	
-	double calculateSquareRoot(double aNumber) throws RemoteException;
-	double calculatePowerTwo(double aNumber) throws RemoteException;
+	void action1() throws RemoteException;
+	void action2() throws RemoteException;
 
 }

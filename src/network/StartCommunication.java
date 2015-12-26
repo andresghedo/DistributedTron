@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/* CLASSE PER TEST E METODI DI PROVA, PER ORA NON UTILIZZATA NEL PROGETTO*/
 public class StartCommunication {
 	
 	static int PORT = 1234;
