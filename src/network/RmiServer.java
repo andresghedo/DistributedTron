@@ -3,6 +3,8 @@ package network;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
 
+import registration.Room;
+
 
 public class RmiServer extends UnicastRemoteObject implements InterfaceRemoteMethod {
 	
@@ -26,6 +28,24 @@ public class RmiServer extends UnicastRemoteObject implements InterfaceRemoteMet
     	// TODO
         System.out.println("ACTION 2");
     }
+    
+    public void message1(String m) {
+    	System.out.println("[MSG]  " + m);
+    }
+
+	@Override
+	public void setRingConfiguration(Room room) throws RemoteException {
+		// TODO Auto-generated method stub
+		Controller.getInstance().setRoom(room);
+		Room r = Controller.getInstance().getRoom();
+		
+		for (int i=0; i<r.getCurrentPlayers();i++) {
+			Host corrente = r.getHosts().get(i);
+			Host successivo = r.getNext(corrente);
+			System.out.println("NODO "+i+" , ip: "+corrente.getIP()+"  ==> next ip: "+successivo.getIP());
+		}
+	}
+    
     
     /* prima si lanciava il server separatamente dalla classe client, ora basta lanciare la classe
      * StartPlay decidendo se si è registration server o meno dai parametri in input

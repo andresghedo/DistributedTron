@@ -18,10 +18,19 @@ public class RmiServerRegistration extends UnicastRemoteObject implements Interf
 	
 	public void addPlayer(Host host) {
 		System.out.println("[REGISTRAZIONE] Aggiunto il player con host IP: "+host.getIP()+"  e PORT:"+host.getPort());
-        this.room.addHost(host);
+		this.room.addHost(host);
+		System.out.println("[REGISTRAZIONE] Numero di host mancanti: " + this.room.getMissingPlayers());
     }
     
     public int getCurrentPlayers() {
         return this.room.getCurrentPlayers();
+    }
+    
+    public void printArrayList() {
+    	this.room.printArrayList();
+    }
+    
+    public Room getRoom() {
+    	return this.room;
     }
 }

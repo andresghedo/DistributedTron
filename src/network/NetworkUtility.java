@@ -1,7 +1,7 @@
 package network;
 
 import java.net.*;
-import java.util.Enumeration;
+import java.util.*;
 
 /*
  *  Classe di supporto alle funzionalità network del progetto.
@@ -18,28 +18,10 @@ public class NetworkUtility {
             instance = new NetworkUtility();
         return instance;
     }
-	
-    /**
-     * Ritorna un indirizzo ip pubblico della macchina
-     * @return string
-     * @throws UnknownHostException
-     */
-    public InetAddress getRemoteIP() throws UnknownHostException {
-        //Ottengo tutti gli IP della macchina
-        String hostName = InetAddress.getLocalHost().getHostName();
-        InetAddress addrs[] = InetAddress.getAllByName(hostName);
-        // Cerco l'indirizzo che non sia per usi locali
-        for (InetAddress addr : addrs) {
-            if (!addr.isLoopbackAddress() && addr.isSiteLocalAddress()) {
-                return addr;
-            }
-        }
-        // Torna nullo altrimenti
-        return null;
-    }
     
     /**
-     * Ritorna un indirizzo ip pubblico della macchina
+     * Ritorna un indirizzo ip pubblico della macchina.
+     * Quello che inizia con 192.168
      * @return string
      * @throws UnknownHostException
      */
@@ -60,6 +42,10 @@ public class NetworkUtility {
             }
         }
         return null;
+    }
+    
+    public String getRandomUUID() {
+    	return UUID.randomUUID().toString();
     }
 
 }

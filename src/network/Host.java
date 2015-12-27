@@ -12,15 +12,17 @@ public class Host implements Serializable {
 	private static final long serialVersionUID = 2122441862583128094L;
 	private String IP;
 	private int PORT;
+	private String uuid;
 	
 	/* costructor */
 	public Host() {
-		
+		this.uuid = NetworkUtility.getInstance().getRandomUUID();
 	}
 
 	public Host(String IP, int port) {
 		this.IP = IP;
 		this.PORT = port;
+		this.uuid = NetworkUtility.getInstance().getRandomUUID();
 	}
 	
 	public String getIP() {
@@ -37,5 +39,13 @@ public class Host implements Serializable {
 	
 	public void setPort(int port) {
 		this.PORT = port;
+	}
+	
+	public String getUUID() {
+		return this.uuid;
+	}
+	
+	public void setUUID(String uuid) {
+		this.uuid = uuid;
 	}
 }

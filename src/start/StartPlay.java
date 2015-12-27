@@ -9,6 +9,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
 
+import network.Controller;
 import network.Host;
 import network.InterfaceRemoteMethod;
 import network.NetworkUtility;
@@ -47,17 +48,22 @@ public class StartPlay {
 		    registry1.bind("MethodService", server);
 		    registry1.bind("RegistrationService", serverRegistration);
 		    Host myHost = new Host(NetworkUtility.getInstance().getHostAddress(), 1234);
+		    Controller.getInstance().setMyHost(myHost);
 		    serverRegistration.addPlayer(myHost);
 		}
-		else if (IP.startsWith("192.168")){
-			System.out.println("[CLIENT]");
+		else if (IP.startsWith("192.168")) {
+			
 			InterfaceRemoteMethod remoteServer = null;
 			InterfaceRemoteMethodRegistration registrationServer = null;
 			Registry register = LocateRegistry.getRegistry(IP, PORT);
 			remoteServer = (InterfaceRemoteMethod) register.lookup("MethodService");
 			registrationServer = (InterfaceRemoteMethodRegistration) register.lookup("RegistrationService");    
 			Host myHost = new Host(NetworkUtility.getInstance().getHostAddress(), 1234);
+			Controller.getInstance().setMyHost(myHost);
 			registrationServer.addPlayer(myHost);
+			System.out.println("[REGISTRED]");
+			if(registrationServer.getRoom().isCompleted())
+				remoteServer.setRingConfiguration(registrationServer.getRoom());
 			Scanner scanner=new Scanner(System.in);
 			while (true) {
 	    		System.out.println("[INPUT] Insert 1 or 2 for remote method action1 or action2:");
