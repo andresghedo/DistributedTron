@@ -1,5 +1,7 @@
 package network;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
 
@@ -34,7 +36,7 @@ public class RmiServer extends UnicastRemoteObject implements InterfaceRemoteMet
     }
 
 	@Override
-	public void setRingConfiguration(Room room) throws RemoteException {
+	public void setRingConfiguration(Room room) throws RemoteException, UnknownHostException, SocketException {
 		// TODO Auto-generated method stub
 		Controller.getInstance().setRoom(room);
 		Room r = Controller.getInstance().getRoom();

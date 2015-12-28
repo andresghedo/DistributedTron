@@ -1,5 +1,7 @@
 package network;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -14,7 +16,7 @@ public interface InterfaceRemoteMethod extends Remote {
 	void action1() throws RemoteException;
 	void action2() throws RemoteException;
 	void message1(String m) throws RemoteException;
-	void setRingConfiguration(Room room) throws RemoteException;
+	public void setRingConfiguration(Room room) throws RemoteException, UnknownHostException, SocketException;
 	// TODO
 
 }

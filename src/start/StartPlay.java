@@ -34,7 +34,7 @@ public class StartPlay {
 		String IP = args[0];
 		if (IP.equals("SERVER")) {
 			int nPlayers = Integer.parseInt(args[1]);
-			System.out.println("[REGISTRATION] Numero di giocatori per iniziare: "+nPlayers);
+			/*System.out.println("[REGISTRATION] Numero di giocatori per iniziare: "+nPlayers);
 			String ipserver = NetworkUtility.getInstance().getHostAddress();
 			System.out.println("[SERVER] IP : " + ipserver + "  in ascolto sulla porta "+PORT+"....");
 		    
@@ -46,10 +46,13 @@ public class StartPlay {
 		    //Registry registry1 = LocateRegistry.getRegistry();
 		    Registry registry1 = LocateRegistry.createRegistry(PORT);
 		    registry1.bind("MethodService", server);
-		    registry1.bind("RegistrationService", serverRegistration);
+		    registry1.bind("RegistrationService", serverRegistration);*/
 		    Host myHost = new Host(NetworkUtility.getInstance().getHostAddress(), 1234);
 		    Controller.getInstance().setMyHost(myHost);
-		    serverRegistration.addPlayer(myHost);
+		    
+		    Controller.getInstance().setDeamonRegistration(nPlayers).addPlayer(myHost);
+		    Controller.getInstance().setDeamon();
+		    //serverRegistration.addPlayer(myHost);
 		}
 		else if (IP.startsWith("192.168")) {
 			
@@ -64,6 +67,7 @@ public class StartPlay {
 			System.out.println("[REGISTRED]");
 			if(registrationServer.getRoom().isCompleted())
 				remoteServer.setRingConfiguration(registrationServer.getRoom());
+			Controller.getInstance().setDeamon();
 			Scanner scanner=new Scanner(System.in);
 			while (true) {
 	    		System.out.println("[INPUT] Insert 1 or 2 for remote method action1 or action2:");
@@ -79,5 +83,9 @@ public class StartPlay {
 		        }
 		    } 
 		}
+	}
+	
+	public static void startDeamon() {
+		
 	}
 }
