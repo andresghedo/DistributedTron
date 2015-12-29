@@ -52,22 +52,7 @@ public class StartPlay {
 			Host myHost = new Host(NetworkUtility.getInstance().getHostAddress(), 1234);
 			Controller.getInstance().setMyHost(myHost);
 			registrationServer.addPlayer(myHost);
-			System.out.println("[REGISTRED]");
-			//Controller.getInstance().getRoom().printRingList();
-			Scanner scanner=new Scanner(System.in);
-			while (true) {
-	    		System.out.println("[INPUT] Insert 1 or 2 for remote method action1 or action2:");
-		        String question = scanner.nextLine();
-		        if(question.equals("q")) {
-		            break;
-		        }
-		        else if(question.equals("1")) {
-		            remoteServer.action1() ;
-		        }
-		        else if(question.equals("2")) {
-		        	remoteServer.action2() ;
-		        }
-		    } 
+			System.out.println("[REGISTRED]"); 
 		}
 	}
 	

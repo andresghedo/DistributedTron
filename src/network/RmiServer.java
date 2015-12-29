@@ -57,11 +57,20 @@ public class RmiServer extends UnicastRemoteObject implements InterfaceRemoteMet
 	public void send(RmiMessage message) {
 		System.out.println("[MSG IN BOX] Arrivato un msg con uuid:"+message.getUuid());
 		// TODO Auto-generated method stub
-		if (message.getUuid().equals(Controller.getInstance().getMyHost().getUUID()))
-			System.out.println("[MSG IN BOX] Il messaggio ha fatto il giro dell'anello!");
-		else {
+		if (!message.getUuid().equals(Controller.getInstance().getMyHost().getUUID()))
+			processPackage(message);
+		else if(message.getPayload() instanceof Room) {
+			System.out.println("[MSG IN BOX] Il messaggio ha fatto il giro dell'anello, ora tutti gli host hanno la configurazione dell'anello!");
+			this.sendStringInRing();
+		}
+		else 
+			System.out.println("[MSG IN BOX] Il messaggio ha fatto il giro dell'anello e viene scartato!");
+	}
+	
+	public void processPackage(RmiMessage message) {
+		if (message.getPayload() instanceof Room){ // se il messaggio contiene una configurazione della Room settala
+			Controller.getInstance().setRoom((Room) message.getPayload());
 			try {
-				processPackage(message);
 				this.getNextHostInterface().send(message);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
@@ -70,14 +79,8 @@ public class RmiServer extends UnicastRemoteObject implements InterfaceRemoteMet
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			this.sendStringInRing();	
 		}
-	}
-	
-	public void processPackage(RmiMessage message) {
-		if (message.getPayload() instanceof Room){ // se il messaggio contiene una configurazione della Room settala
-			Controller.getInstance().setRoom((Room) message.getPayload());
-			this.sendStringInRing();
-			}
 		if (message.getPayload() instanceof String) // il messaggio contiene una stringa	
 			System.out.println("[MSG FROM REMOTE] String: " + (String)message.getPayload());
 	}
