@@ -56,10 +56,11 @@ public class RmiServer extends UnicastRemoteObject implements InterfaceRemoteMet
 	public void send(RmiMessage message) {
 		System.out.println("[MSG IN BOX] Arrivato un msg con uuid:"+message.getUuid());
 		// TODO Auto-generated method stub
-		if (message.getUuid() == Controller.getInstance().getMyHost().getUUID())
+		if (message.getUuid().equals(Controller.getInstance().getMyHost().getUUID()))
 			System.out.println("[MSG IN BOX] Il messaggio ha fatto il giro dell'anello!");
 		else {
 			try {
+				Controller.getInstance().setRoom((Room) message.getPayload());
 				this.getNextHostInterface().send(message);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block

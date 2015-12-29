@@ -43,6 +43,7 @@ public class StartPlay {
 		}
 		else if (IP.startsWith("192.168")) {
 			
+			startDeamon();
 			InterfaceRemoteMethod remoteServer = null;
 			InterfaceRemoteMethodRegistration registrationServer = null;
 			Registry register = LocateRegistry.getRegistry(IP, PORT);
@@ -52,9 +53,7 @@ public class StartPlay {
 			Controller.getInstance().setMyHost(myHost);
 			registrationServer.addPlayer(myHost);
 			System.out.println("[REGISTRED]");
-			System.out.println("[ANELLO LOCALE]:");
-			Controller.getInstance().getRoom().printRingList();
-			startDeamon();
+			//Controller.getInstance().getRoom().printRingList();
 			Scanner scanner=new Scanner(System.in);
 			while (true) {
 	    		System.out.println("[INPUT] Insert 1 or 2 for remote method action1 or action2:");
