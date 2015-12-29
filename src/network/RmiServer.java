@@ -7,6 +7,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Scanner;
 
 import registration.InterfaceRemoteMethodRegistration;
 import registration.Room;
@@ -60,7 +61,7 @@ public class RmiServer extends UnicastRemoteObject implements InterfaceRemoteMet
 			System.out.println("[MSG IN BOX] Il messaggio ha fatto il giro dell'anello!");
 		else {
 			try {
-				Controller.getInstance().setRoom((Room) message.getPayload());
+				processPackage(message);
 				this.getNextHostInterface().send(message);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
@@ -72,6 +73,15 @@ public class RmiServer extends UnicastRemoteObject implements InterfaceRemoteMet
 		}
 	}
 	
+	public void processPackage(RmiMessage message) {
+		if (message.getPayload() instanceof Room){ // se il messaggio contiene una configurazione della Room settala
+			Controller.getInstance().setRoom((Room) message.getPayload());
+			this.sendStringInRing();
+			}
+		if (message.getPayload() instanceof String) // il messaggio contiene una stringa	
+			System.out.println("[MSG FROM REMOTE] String: " + (String)message.getPayload());
+	}
+	
 	public InterfaceRemoteMethod getNextHostInterface() throws RemoteException, NotBoundException {
 		Host h = Controller.getInstance().getMyHost();
 		Host next = Controller.getInstance().getRoom().getNext(h);	
@@ -81,6 +91,24 @@ public class RmiServer extends UnicastRemoteObject implements InterfaceRemoteMet
 		return remoteServer;
 	}
 	
+	public void sendStringInRing() {
+		Scanner scanner=new Scanner(System.in);
+		while (true) {
+    		System.out.println("[INPUT] Insert key");
+	        String str = scanner.nextLine();
+	        String uuid = Controller.getInstance().getMyHost().getUUID();
+			RmiMessage m = new RmiMessage(str, uuid);
+			try {
+				this.getNextHostInterface().send(m);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NotBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    }
+	}
 	
 
 }
