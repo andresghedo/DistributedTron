@@ -14,6 +14,5 @@ import network.Host;
 public interface InterfaceRemoteMethodRegistration extends Remote {
 	void addPlayer(Host host) throws RemoteException;
 	int getCurrentPlayers() throws RemoteException;
-	void printArrayList() throws RemoteException;
 	Room getRoom() throws RemoteException;
 }

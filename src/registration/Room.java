@@ -68,7 +68,7 @@ public class Room implements Serializable{
 		return this.hosts.getNext(host);
 	}
 	
-	public void printArrayList() {
+	public void printRingList() {
 		for (int i = 0; i < this.hosts.size(); i++) {
 			System.out.println("[HOST "+i+"] Con uuid: "+this.hosts.get(i).getUUID());
         }

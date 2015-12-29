@@ -2,9 +2,13 @@ package network;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
+import registration.InterfaceRemoteMethodRegistration;
 import registration.Room;
 
 
@@ -47,24 +51,35 @@ public class RmiServer extends UnicastRemoteObject implements InterfaceRemoteMet
 			System.out.println("NODO "+i+" , ip: "+corrente.getIP()+"  ==> next ip: "+successivo.getIP());
 		}
 	}
-    
-    
-    /* prima si lanciava il server separatamente dalla classe client, ora basta lanciare la classe
-     * StartPlay decidendo se si è registration server o meno dai parametri in input
-    public static void main(String[] args) throws UnknownHostException, SocketException, RemoteException, AlreadyBoundException {
-        
-    	System.out.println("Numero di giocatori per iniziare: "+Integer.parseInt(args[0]));
-    	String ipserver = NetworkUtility.getInstance().getHostAddress();
-    	System.out.println("[SERVER] IP : " + ipserver + "  in ascolto sulla porta "+PORT+"....");
-        System.setProperty("java.rmi.server.hostname", ipserver);
-        System.setProperty("java.rmi.disableHttp", "true");
-        InterfaceRemoteMethod server = new RmiServer();
-        InterfaceRemoteMethodRegistration serverRegistration = new RmiServerRegistration(Integer.parseInt(args[0]));
-        //Registry registry1 = LocateRegistry.getRegistry();
-        Registry registry1 = LocateRegistry.createRegistry(PORT);
-        registry1.bind("MethodService", server);
-        registry1.bind("RegistrationService", serverRegistration);
-    }
-    */
+
+	@Override
+	public void send(RmiMessage message) {
+		System.out.println("[MSG IN BOX] Arrivato un msg con uuid:"+message.getUuid());
+		// TODO Auto-generated method stub
+		if (message.getUuid() == Controller.getInstance().getMyHost().getUUID())
+			System.out.println("[MSG IN BOX] Il messaggio ha fatto il giro dell'anello!");
+		else {
+			try {
+				this.getNextHostInterface().send(message);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NotBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public InterfaceRemoteMethod getNextHostInterface() throws RemoteException, NotBoundException {
+		Host h = Controller.getInstance().getMyHost();
+		Host next = Controller.getInstance().getRoom().getNext(h);	
+		InterfaceRemoteMethod remoteServer = null;
+		Registry register = LocateRegistry.getRegistry(next.getIP(), PORT);
+		remoteServer = (InterfaceRemoteMethod) register.lookup("MethodService");
+		return remoteServer;
+	}
+	
+	
 
 }

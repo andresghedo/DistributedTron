@@ -2,6 +2,7 @@ package start;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -20,6 +21,7 @@ import registration.RmiServerRegistration;
 public class StartPlay {
 
 	private static int PORT = 1234;
+	private static Registry registry;
 	/**
 	 * @param args
 	 * @throws RemoteException 
@@ -34,25 +36,10 @@ public class StartPlay {
 		String IP = args[0];
 		if (IP.equals("SERVER")) {
 			int nPlayers = Integer.parseInt(args[1]);
-			/*System.out.println("[REGISTRATION] Numero di giocatori per iniziare: "+nPlayers);
-			String ipserver = NetworkUtility.getInstance().getHostAddress();
-			System.out.println("[SERVER] IP : " + ipserver + "  in ascolto sulla porta "+PORT+"....");
-		    
-			System.setProperty("java.rmi.server.hostname", ipserver);
-		    System.setProperty("java.rmi.disableHttp", "true");
-		    
-		    InterfaceRemoteMethod server = new RmiServer();
-		    InterfaceRemoteMethodRegistration serverRegistration = new RmiServerRegistration(nPlayers);
-		    //Registry registry1 = LocateRegistry.getRegistry();
-		    Registry registry1 = LocateRegistry.createRegistry(PORT);
-		    registry1.bind("MethodService", server);
-		    registry1.bind("RegistrationService", serverRegistration);*/
 		    Host myHost = new Host(NetworkUtility.getInstance().getHostAddress(), 1234);
 		    Controller.getInstance().setMyHost(myHost);
-		    
-		    Controller.getInstance().setDeamonRegistration(nPlayers).addPlayer(myHost);
-		    Controller.getInstance().setDeamon();
-		    //serverRegistration.addPlayer(myHost);
+		    startDeamon();
+		    startDeamonRegistration(nPlayers, myHost);
 		}
 		else if (IP.startsWith("192.168")) {
 			
@@ -65,9 +52,9 @@ public class StartPlay {
 			Controller.getInstance().setMyHost(myHost);
 			registrationServer.addPlayer(myHost);
 			System.out.println("[REGISTRED]");
-			if(registrationServer.getRoom().isCompleted())
-				remoteServer.setRingConfiguration(registrationServer.getRoom());
-			Controller.getInstance().setDeamon();
+			System.out.println("[ANELLO LOCALE]:");
+			Controller.getInstance().getRoom().printRingList();
+			startDeamon();
 			Scanner scanner=new Scanner(System.in);
 			while (true) {
 	    		System.out.println("[INPUT] Insert 1 or 2 for remote method action1 or action2:");
@@ -85,7 +72,19 @@ public class StartPlay {
 		}
 	}
 	
-	public static void startDeamon() {
-		
+	public static void startDeamon() throws UnknownHostException, SocketException, RemoteException, AlreadyBoundException {
+		System.setProperty("java.rmi.server.hostname", NetworkUtility.getInstance().getHostAddress());
+	    System.setProperty("java.rmi.disableHttp", "true");
+		registry = LocateRegistry.createRegistry(PORT);
+		System.out.println("[DEBUG] Ora sono in ascolto da eventuali richieste dall'esterno");
+		RmiServer server = new RmiServer();
+		Controller.getInstance().setCommunication(server);
+	    registry.bind("MethodService", server);
+	}
+	
+	public static void startDeamonRegistration(int nPlayers, Host myHost) throws AccessException, RemoteException, AlreadyBoundException {
+		System.out.println("[DEBUG REG] Io implemento il servizio di registrazione");
+		RmiServerRegistration serverRegistration = new RmiServerRegistration(nPlayers, myHost);
+		registry.bind("RegistrationService", serverRegistration);
 	}
 }
