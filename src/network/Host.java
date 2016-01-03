@@ -2,7 +2,7 @@ package network;
 
 import java.io.Serializable;
 
-/*
+/**
  * Classe che identifica un host coinvolto nella rete, implementa l'interfaccia serializzabile in
  * modo che un oggetto di tipo Host possa essere passato come parametro ad un metodo remoto tra
  * Client e Server (e/o viceversa).
@@ -14,7 +14,6 @@ public class Host implements Serializable {
 	private int PORT;
 	private String uuid;
 	
-	/* costructor */
 	public Host() {
 		this.uuid = NetworkUtility.getInstance().getRandomUUID();
 	}

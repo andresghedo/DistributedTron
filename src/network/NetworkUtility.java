@@ -3,7 +3,7 @@ package network;
 import java.net.*;
 import java.util.*;
 
-/*
+/**
  *  Classe di supporto alle funzionalità network del progetto.
  *  Adottato il Singleton Pattern -> nel progetto vogliamo che vi sia
  *  una ed una sola istanza di questo oggetto java.
@@ -44,6 +44,11 @@ public class NetworkUtility {
         return null;
     }
     
+    /**
+     * Torna un uuid univoco in modo da identificare, appunto univocamente,
+     * il messaggio e l'host stesso.
+     * @return
+     */
     public String getRandomUUID() {
     	return UUID.randomUUID().toString();
     }

@@ -1,7 +1,16 @@
 package network;
 
 import registration.Room;
-
+/**
+ * Classe Controller, implementa il pattern SINGLETON. La classe contiene tutti gli
+ * elementi necessari per amministrare l'Host. La seguente soluzione permette di richiamare
+ * l'unica istanza del Controller da qualsiasi punto del codice ed accedere tramite i getters 
+ * ad elementi fondamentali per amministrare diversi aspetti(ad esempio accedere alla configurazione
+ * dell'anello, ai dati personali dell'host, oppure al server in ascolto di client per l'esportazione
+ * dei propri metodi remoti).
+ * @author andreasd
+ *
+ */
 public class Controller {
 	
 private static Controller instance;
