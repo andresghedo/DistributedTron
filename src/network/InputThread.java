@@ -27,16 +27,13 @@ public class InputThread extends Thread {
 					try {
 						Controller.getInstance().getCommunication().getNextHostInterface().send(m);
 					} catch (ServerNotActiveException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println("########### SERVERNOTACTIVE EXCEPTION @ INPUTTHREAD.RUN ###########");
 					}
 				
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("########### REMOTE EXCEPTION @ INPUTTHREAD.RUN ###########");
 			} catch (NotBoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("########### NOTBOUND EXCEPTION @ INPUTTHREAD.RUN ###########");
 			}
 	    }
     }

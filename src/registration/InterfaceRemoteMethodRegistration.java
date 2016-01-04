@@ -3,7 +3,6 @@ package registration;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
-import network.Host;
 
 /**
  * Interfaccia dei metodi remoti che vengono resi accessibili dall'esterno,
@@ -13,7 +12,7 @@ import network.Host;
  */
 public interface InterfaceRemoteMethodRegistration extends Remote {
 	/** Aggiunta di un giocatore al tavolo di gioco */
-	void addPlayer(Host host) throws RemoteException, InterruptedException, ServerNotActiveException;
+	void addPlayer(Player p) throws RemoteException, InterruptedException, ServerNotActiveException;
 	/** Indica il numero di giocatori seduti al tavolo*/
 	int getCurrentPlayers() throws RemoteException;
 	/** Ritorna la stanza di gioco */

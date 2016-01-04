@@ -15,7 +15,27 @@ import network.Host;
 import network.NetworkUtility;
 import network.RmiServer;
 import registration.InterfaceRemoteMethodRegistration;
+import registration.Player;
 import registration.RmiServerRegistration;
+
+/**
+ * CHIAMATA DI SERVER(DENTRO DIRECTORY TRON/BIN):
+ * java start.StartPlay SERVER 3 andrea GUI
+ * SERVER --> indica che il nodo è il server del servizio di registrazione
+ * 3 --> numero di giocatori che parteciperanno
+ * andrea --> username del giocatore
+ * GUI --> mostra interfaccia grafica
+ * --------------------------------------------------------------
+ * CHIAMATA DI CLIENT(DENTRO DIRECTORY TRON/BIN):
+ * java start.StartPlay 192.168.56.101 marco GUI
+ * 192.168.56.101 --> IP del server che implementa il servizio di registrazione
+ * marco --> username del giocatore
+ * GUI --> mostra interfaccia grafica 
+ * 
+ * @author andreasd
+ *
+ */
+
 
 public class StartPlay {
 
@@ -37,10 +57,14 @@ public class StartPlay {
 		String IP = args[0];
 		if (IP.equals("SERVER")) {
 			int nPlayers = Integer.parseInt(args[1]);
+			String username = args[2];
+			if ((args.length == 4) && (args[3].equals("GUI")))
+				Controller.getInstance().setShowGUI(true);
 		    Host myHost = new Host(NetworkUtility.getInstance().getHostAddress(), 1234);
-		    Controller.getInstance().setMyHost(myHost);
+		    Player myPlayer = new Player(username, myHost, null);
+		    Controller.getInstance().setMyPlayer(myPlayer);
 		    startDeamon();
-		    startDeamonRegistration(nPlayers, myHost);
+		    startDeamonRegistration(nPlayers, myPlayer);
 		}
 		else if (IP.startsWith("192.168")) {
 			
@@ -48,9 +72,13 @@ public class StartPlay {
 			InterfaceRemoteMethodRegistration registrationServer = null;
 			Registry register = LocateRegistry.getRegistry(IP, PORT);
 			registrationServer = (InterfaceRemoteMethodRegistration) register.lookup("RegistrationService");    
+			String username = args[1];
+			if ((args.length == 3) && (args[2].equals("GUI")))
+				Controller.getInstance().setShowGUI(true);
 			Host myHost = new Host(NetworkUtility.getInstance().getHostAddress(), 1234);
-			Controller.getInstance().setMyHost(myHost);
-			registrationServer.addPlayer(myHost);
+			Player myPlayer = new Player(username, myHost, null);
+			Controller.getInstance().setMyPlayer(myPlayer);
+			registrationServer.addPlayer(myPlayer);
 			System.out.println("[HOST REGISTRED]"); 
 		}
 	}
@@ -82,9 +110,9 @@ public class StartPlay {
 	 * @throws InterruptedException
 	 * @throws ServerNotActiveException
 	 */
-	public static void startDeamonRegistration(int nPlayers, Host myHost) throws AccessException, RemoteException, AlreadyBoundException, InterruptedException, ServerNotActiveException {
+	public static void startDeamonRegistration(int nPlayers, Player myPlayer) throws AccessException, RemoteException, AlreadyBoundException, InterruptedException, ServerNotActiveException {
 		System.out.println("[REGISTRATION SERVICE] IN ASCOLTO...");
-		RmiServerRegistration serverRegistration = new RmiServerRegistration(nPlayers, myHost);
+		RmiServerRegistration serverRegistration = new RmiServerRegistration(nPlayers, myPlayer);
 		registry.bind("RegistrationService", serverRegistration);
 	}
 }
