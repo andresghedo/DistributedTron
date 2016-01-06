@@ -10,12 +10,15 @@ import java.util.ArrayList;
 import network.Controller;
 import network.RmiMessage;
 
+/**
+ * Classe che implementa un servizio base di registrazione centralizzato remoto.
+ */
 public class RmiServerRegistration extends UnicastRemoteObject implements InterfaceRemoteMethodRegistration {
 
 	private static final long serialVersionUID = 1L;
 	private Room room;
 	private ArrayList<Color> colors;
-	private int x = 100;
+	private int startXGui = 100;
 	/**
 	 * Costruttore di classe che prende in input il numero di giocatori necessari ad iniziare il gioco
 	 * e l'host corrente su cui viene implementato il servizio di registrazione centralizzato
@@ -34,8 +37,8 @@ public class RmiServerRegistration extends UnicastRemoteObject implements Interf
 	public void addPlayer(Player p) throws InterruptedException, ServerNotActiveException {
 		System.out.println("[REGISTRATION SERVICE] AGGIUNTO HOST IP: "+p.getHost().getIP()+"  e PORT:"+p.getHost().getPort());
 		p.setColor(this.colors.remove(0));
-		p.setStartXPos(x);
-		x += 100;
+		p.setStartXPos(this.startXGui);
+		this.startXGui += 100;
 		this.room.addPlayer(p);
 		System.out.println("[REGISTRATION SERVICE] NUMERO DI GIOCATORI MANCANTI ALL'INIZIO: " + this.room.getMissingPlayers());
 		if (this.room.isCompleted()) {
@@ -46,11 +49,8 @@ public class RmiServerRegistration extends UnicastRemoteObject implements Interf
 			try {
 				Controller.getInstance().getCommunication().getNextHostInterface().send(m);
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
 				System.out.println("########### REMOTE EXCEPTION @ RMISERVERREGISTRATION.ADDPLAYER ###########");
 			} catch (NotBoundException e) {
-				// TODO Auto-generated catch block
 				System.out.println("########### NOTBOUND EXCEPTION @ RMISERVERREGISTRATION.ADDPLAYER ###########");
 			}
 		}

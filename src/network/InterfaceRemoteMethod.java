@@ -10,5 +10,4 @@ import java.rmi.RemoteException;
 public interface InterfaceRemoteMethod extends Remote {
 	/** Logicamente è come una primitiva send in un anello unidirezionale */
 	void send(RmiMessage message) throws RemoteException;
-
 }

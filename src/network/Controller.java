@@ -8,26 +8,30 @@ import java.util.ArrayList;
 import registration.Player;
 import registration.Room;
 /**
- * Classe Controller, implementa il pattern SINGLETON. La classe contiene tutti gli
- * elementi necessari per amministrare l'Host. La seguente soluzione permette di richiamare
- * l'unica istanza del Controller da qualsiasi punto del codice ed accedere tramite i getters 
- * ad elementi fondamentali per amministrare diversi aspetti(ad esempio accedere alla configurazione
- * dell'anello, ai dati personali dell'host, oppure al server in ascolto di client per l'esportazione
- * dei propri metodi remoti).
- * @author andreasd
+ *  Classe Controller, implementa il pattern SINGLETON. La classe contiene tutti gli
+ *  elementi necessari per amministrare l'Host. La seguente soluzione permette di richiamare
+ *  l'unica istanza del Controller da qualsiasi punto del codice ed accedere tramite i getters 
+ *  ad elementi fondamentali per amministrare diversi aspetti(ad esempio accedere alla configurazione
+ *  dell'anello, ai dati personali dell'host, oppure al server in ascolto di client per l'esportazione
+ *  dei propri metodi remoti).
+ *  @author andreasd
  *
  */
 public class Controller {
-	
-private static Controller instance;
-	
+	/** istanza singleton */
+	private static Controller instance;
+	/** istanza della classe Room */
 	private Room room;
+	/** istanza della classe RmiServer dell'host corrente */
 	private RmiServer communication;
+	/** istanza della classe Player che identifica il giocatore della macchina */
 	private Player player;
+	/** variabile booleana per mostrare GUI o meno [utilizzata in fase di sviluppo] */
 	private boolean showGUI = false;
+	/** istanza della classe SimpleTronFrame che fornisce il JFrame della GUI */
 	private SimpleTronFrame frameGUI;
 	
-	/* cerca l'istanza, se la trova la torna altrimenti la crea */
+	/** cerca l'istanza singleton, se la trova la torna altrimenti la crea */
 	public static Controller getInstance() {
         if(instance == null)
             instance = new Controller();
@@ -49,7 +53,11 @@ private static Controller instance;
 	public Room getRoom() {
 		return this.room;
 	}
-
+	
+	/** 
+	 *  Quando setto la Room che mi arriva dall'host che implementa il servizi di registrazione
+	 *  centralizzato, vado a cercare e settare che colore ha impostato per il mio Player.
+	 */
 	public void setRoom(Room room) {
 		this.room = room;
 		this.setMyColor();
@@ -64,6 +72,9 @@ private static Controller instance;
 		this.communication = c;
 	}
 	
+	/**
+	 * Cerco nella Room l'host che mi rappresenta e ne prelevo il colore e lo setto. 
+	 */
 	public void setMyColor() {
 		ArrayList<Player> p = this.room.getPlayers();
 		for (int i=0; i<p.size();i++) {
@@ -96,7 +107,10 @@ private static Controller instance;
 		return null;
 	}
 	
-	public void setInitalYPlayerFromUUid() {
+	/** 
+	 * Setto la posizione iniziale che l'host di registrazione ha previsto per il mio Player. 
+	 */
+	public void setInitalXPlayerFromUUid() {
 		for (int i=0; i<this.room.getPlayers().size(); i++) {
 			if(this.room.getPlayers().get(i).getHost().getUUID().equals(this.player.getHost().getUUID()))
 				this.player.setStartXPos(this.room.getPlayers().get(i).getStartXPos());

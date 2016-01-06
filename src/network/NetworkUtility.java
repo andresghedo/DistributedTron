@@ -12,7 +12,7 @@ public class NetworkUtility {
 
 	private static NetworkUtility instance;
 	
-	/* cerca l'istanza, se la trova la torna altrimenti la crea */
+	/** cerca l'istanza, se la trova la torna altrimenti la crea */
 	public static NetworkUtility getInstance() {
         if(instance == null)
             instance = new NetworkUtility();

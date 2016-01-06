@@ -27,4 +27,8 @@ public class RmiMessage implements Serializable {
 	public String  getUuid() {
 		return this.uuid;
 	}
+	
+	public void setPayload(Object o) {
+		this.payload = o;
+	}
 }

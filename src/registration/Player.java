@@ -5,12 +5,20 @@ import java.io.Serializable;
 
 import network.Host;
 
+/**
+ *	Classe Player che rappresenta il giocatore, l'insieme dei Player previsti
+ *  sono raccolti nella classe Room, in ArrayList. 
+ */
 public class Player implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	/** username del giocatore */
 	private String username;
+	/** colore utilizzato nell'interfaccia grafica */
 	private Color color;
+	/** classe host che tiene traccia dei parametri di networking */
 	private Host host;
+	/** posizione iniziale della moto del player nell'interfaccia grafica */
 	private int startXPos;
 	
 	public Player() {}

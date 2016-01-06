@@ -3,6 +3,9 @@ package registration;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * Classe che tiene traccia dei giocatori seduti alla stanza di gioco
+ */
 public class Room implements Serializable{
 
 	private static final long serialVersionUID = 1L;

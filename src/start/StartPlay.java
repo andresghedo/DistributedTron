@@ -53,7 +53,7 @@ public class StartPlay {
 	 * @throws InterruptedException 
 	 * @throws ServerNotActiveException 
 	 */
-	public static void main(String[] args) throws NumberFormatException, RemoteException, AlreadyBoundException, UnknownHostException, SocketException, NotBoundException, InterruptedException, ServerNotActiveException {
+	public static void main(String[] args) throws RemoteException, AlreadyBoundException, UnknownHostException, SocketException, NotBoundException, InterruptedException, ServerNotActiveException {
 		String IP = args[0];
 		if (IP.equals("SERVER")) {
 			int nPlayers = Integer.parseInt(args[1]);

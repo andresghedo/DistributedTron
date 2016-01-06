@@ -8,11 +8,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
+import java.util.Calendar;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -21,16 +20,16 @@ import javax.swing.Timer;
 import network.Controller;
 import network.RmiMessage;
 
-public class SimpleTronFrame implements ActionListener, MouseListener, KeyListener
+public class SimpleTronFrame implements ActionListener, KeyListener
 {	
 	/** DIREZIONI DI MOVIMENTO DELLA MOTO */
 	public static String[] direction = {"N", "S", "W", "E"}; 
 	/** FINESTRA DI GIOCO */
-	public final int WIDTH = 800, HEIGHT = 800;
+	public final int WIDTH = 800, HEIGHT = 400;
 	/** GRANDEZZA QUADRATO DELLA MOTO */
 	public final int SIZE_MOTO = 3;
 	/** UPDATE DELLA FINESTRA */
-	public final int TIMER_UPDATE = 600;
+	public final int TIMER_UPDATE = 20;
 	/** VELOCITA DELLA MOTO*/
 	public final int SPEED = 3;
 	/** PANNELLO DI DISEGNO */
@@ -41,61 +40,73 @@ public class SimpleTronFrame implements ActionListener, MouseListener, KeyListen
 	public boolean started;
 	/** DIREZIONE CORRENTE DELLA MOTO */
 	public String currentDirection;
-
+	public Timer timer;
+	
+	/** 
+	 *  COSTRUTTORE DI CLASSE 
+	 *	setta il JFrame ed il Jpanel per la grafica e fa partire il gioco,
+	 *  ovvero il timer per l'update della grafica e dei movimenti della moto.
+	 * 
+	 */
 	public SimpleTronFrame() {
 		JFrame jframe = new JFrame();
-		Timer timer = new Timer(TIMER_UPDATE, this);
+		timer = new Timer(TIMER_UPDATE, this);
 		panel = new JPanel();
 		jframe.add(panel);
 		panel.setBackground(Color.black);
 		jframe.setTitle("DISTRIBUTED TRON");
 		jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jframe.setSize(WIDTH, HEIGHT);
-		jframe.addMouseListener(this);
 		jframe.addKeyListener(this);
 		jframe.setResizable(false);
 		jframe.setVisible(true);
 
-		motorbike = new Rectangle(Controller.getInstance().getMyPlayer().getStartXPos(), HEIGHT/2, SIZE_MOTO, SIZE_MOTO);
-		timer.start();
+		motorbike = new Rectangle(Controller.getInstance().getMyPlayer().getStartXPos(), HEIGHT-32, SIZE_MOTO, SIZE_MOTO);
 		panel.getGraphics().setColor(Color.black);
 		panel.getGraphics().fillRect(0, 0, WIDTH, HEIGHT);
-		this.startGame();
+		this.startGame(timer);
 	}
-
+	
+	/** 
+	 *  Metodo che viene eseguito ad ogni frame update(TIMER_UPDATE), 
+	 *  si preoccupa di inviare la posizione della moto agli altri host e di
+	 *  muoverla verso la direzione corrente.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		System.out.println("[ACTION PERFORMED]");
-		if (started) {
-			this.moveMoto();
-		}
-		this.repaint();
-        String uuid = Controller.getInstance().getMyHost().getUUID();
+		System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][ACTION PERFORMED]");
+		
+		String uuid = Controller.getInstance().getMyHost().getUUID();
 		RmiMessage m = new RmiMessage(motorbike, uuid);
+		
 		try {
 			Controller.getInstance().getCommunication().getNextHostInterface().send(m);
 		} catch (RemoteException e1) {
-			System.out.println("########### REMOTE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### REMOTE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 		} catch (NotBoundException e1) {
-			System.out.println("########### NOTBOUND EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### NOTBOUND EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 		} catch (ServerNotActiveException e1) {
-			System.out.println("########### SERVERNOTACTIVE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
-		} catch (Exception e1) {
-			System.out.println("########### GENERAL EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### SERVERNOTACTIVE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+		} catch (NullPointerException e1) { // return perchè nessuno parte quando tutti non sono pronti ad implementare la grafica
+			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### NULLPOINTER EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+			return;
 		}
+		
+		if (started) {
+			this.moveMoto();
+		}
+		
+		this.repaint();
 	}
 	
+	/** 
+	 *  Metodo che muove la moto nella direzione corrente di 
+	 *  quanto richiede la velocità (SPEED).
+	 */
 	public void moveMoto() {
 		
-		if (!started)
-		{
-			panel.getGraphics().setColor(Color.black);
-			panel.getGraphics().fillRect(0, 0, WIDTH, HEIGHT);
-			this.currentDirection = "N";
-			started = true;
-		}
-		else if (this.currentDirection.equals("N")) {
+		if (this.currentDirection.equals("N")) {
 			motorbike.y -= this.SPEED;
 		}
 		else if (this.currentDirection.equals("S")) {
@@ -109,6 +120,9 @@ public class SimpleTronFrame implements ActionListener, MouseListener, KeyListen
 		}
 	}
 	
+	/**
+	 * Metodo che disegna graficamente la moto sul JPanel
+	 */
 	public void drawMoto(Graphics g) {
 	
 		if (this.currentDirection.equals("N")) {
@@ -125,15 +139,24 @@ public class SimpleTronFrame implements ActionListener, MouseListener, KeyListen
 		}
 	}
 	
-	public void startGame(){
+	/**
+	 * Metodo che decreta l'inizio del gioco.
+	 */
+	public void startGame(Timer t){
 		if (!started) {
-			System.out.println("[STARTING GUI FRAME]");
+			//t.setInitialDelay(1000);	// messo un delay iniziale per evitare che qualche nodo non abbia istanziato il frame
+			t.start();
+			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][STARTING GUI FRAME]");
 			panel.getGraphics().setColor(Color.black);
 			panel.getGraphics().fillRect(0, 0, WIDTH, HEIGHT);
 			this.currentDirection = "N";
 			started = true;
 		}
 	}
+	
+	/**
+	 *  Metodo di repaint del JPanel, aggiorna il movimento della moto.
+	 */
 	public void repaint()
 	{
 		Graphics g = this.panel.getGraphics();
@@ -151,18 +174,23 @@ public class SimpleTronFrame implements ActionListener, MouseListener, KeyListen
 		}
 	}
 	
+	/**
+	 *  Metodo che disegna una moto di un colore c, passati come parametri.
+	 *  Viene utilizzato all'arrivo di messaggi esterni per disegnare moto avversarie.
+	 */
 	public void repaint(Rectangle motorbike, Color c)
 	{
+		System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][REPAINT DEBUG]");
 		Graphics g = this.panel.getGraphics();
 		g.setColor(c);
 		g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height);
 	}
-
-	@Override
-	public void mouseClicked(MouseEvent e)
-	{
-	}
-
+	
+	/**
+	 *  Metodo che implementa l'ascoltatre alla pressioni delle frecce.
+	 *  Cambia solo la direzione corrente della moto, dato che il movimento 
+	 *  è automatico
+	 */
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
@@ -180,25 +208,7 @@ public class SimpleTronFrame implements ActionListener, MouseListener, KeyListen
 	        case KeyEvent.VK_RIGHT :
 	        	this.currentDirection = "E";
 	            break;
-	        case KeyEvent.VK_ENTER:
-	        	this.startGame();
 	     }
-	}
-
-
-	@Override
-	public void mouseReleased(MouseEvent e)
-	{
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e)
-	{
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e)
-	{
 	}
 
 	@Override
@@ -211,9 +221,4 @@ public class SimpleTronFrame implements ActionListener, MouseListener, KeyListen
 	public void keyPressed(KeyEvent e)
 	{
 	}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {		
-	}
-
 }
