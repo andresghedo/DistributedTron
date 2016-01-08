@@ -66,7 +66,7 @@ public class StartPlay {
 		    startDeamon();
 		    startDeamonRegistration(nPlayers, myPlayer);
 		}
-		else if (IP.startsWith("192.168")) {
+		else if (IP.startsWith("1")) {
 			
 			startDeamon();
 			InterfaceRemoteMethodRegistration registrationServer = null;

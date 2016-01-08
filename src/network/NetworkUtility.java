@@ -35,7 +35,7 @@ public class NetworkUtility {
 
                     if(address instanceof Inet4Address){
                     	String strHostIp = address.getHostAddress();
-                		if (strHostIp.startsWith("192.168"))
+                		//if (strHostIp.startsWith("192.168"))
                 			return strHostIp;
                     }
                 }
