@@ -74,4 +74,16 @@ public class Room implements Serializable{
         }
 		return null;
 	}
+	
+	/** 
+	 *  Rimuove il player dato in input alla funzione.
+	 */
+	public void removePlayer(Player p) {
+		for (int i = 0; i < this.players.size(); i++) {
+			Player current = this.players.get(i);
+			if((current.getHost().getIP().equals(p.getHost().getIP())) && (current.getHost().getPort() == p.getHost().getPort()) && (current.getHost().getUUID().equals(p.getHost().getUUID()))) {
+				this.players.remove(i);
+			}
+        }
+	}
 }

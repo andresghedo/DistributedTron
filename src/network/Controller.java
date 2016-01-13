@@ -30,6 +30,8 @@ public class Controller {
 	private boolean showGUI = false;
 	/** istanza della classe SimpleTronFrame che fornisce il JFrame della GUI */
 	private SimpleTronFrame frameGUI;
+	/** booleano che notifica se il player sta già giocando o meno */
+	private boolean isGaming = false;
 	
 	/** cerca l'istanza singleton, se la trova la torna altrimenti la crea */
 	public static Controller getInstance() {
@@ -123,5 +125,13 @@ public class Controller {
 	
 	public SimpleTronFrame getFrameGUI() {
 		return this.frameGUI;
+	}
+
+	public void setIsGaming(boolean b) {
+		this.isGaming = b;
+	}
+
+	public boolean getIsGaming() {
+		return this.isGaming;
 	}
 }

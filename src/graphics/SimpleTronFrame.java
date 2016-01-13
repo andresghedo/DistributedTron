@@ -89,6 +89,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		} catch (ServerNotActiveException e1) {
 			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### SERVERNOTACTIVE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 		} catch (NullPointerException e1) { // return perchè nessuno parte quando tutti non sono pronti ad implementare la grafica
+			//e1.printStackTrace();
 			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### NULLPOINTER EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 			return;
 		}
