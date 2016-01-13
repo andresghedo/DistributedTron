@@ -66,6 +66,7 @@ public class StartPlay {
 		    startDeamon();
 		    startDeamonRegistration(nPlayers, myPlayer);
 		}
+		//se gioco da solo
 		else if (IP.startsWith("1")) {
 			
 			startDeamon();

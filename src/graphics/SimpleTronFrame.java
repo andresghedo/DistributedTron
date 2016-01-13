@@ -25,13 +25,13 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	/** DIREZIONI DI MOVIMENTO DELLA MOTO */
 	public static String[] direction = {"N", "S", "W", "E"}; 
 	/** FINESTRA DI GIOCO */
-	public final int WIDTH = 800, HEIGHT = 400;
+	public final int WIDTH = 1000, HEIGHT = 600;
 	/** GRANDEZZA QUADRATO DELLA MOTO */
 	public final int SIZE_MOTO = 3;
 	/** UPDATE DELLA FINESTRA */
 	public final int TIMER_UPDATE = 20;
 	/** VELOCITA DELLA MOTO*/
-	public final int SPEED = 3;
+	public final int SPEED = 4;
 	/** PANNELLO DI DISEGNO */
 	public JPanel panel;
 	/** RETTANGOLO CHE RAPPRESENTA LA MOTO */
@@ -40,6 +40,8 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	public boolean started;
 	/** DIREZIONE CORRENTE DELLA MOTO */
 	public String currentDirection;
+	//Si ricorda della direzzione attuale della moto
+	public String OldDirection;
 	public Timer timer;
 	
 	/** 
@@ -119,6 +121,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		else if (this.currentDirection.equals("E")) {
 			motorbike.x += this.SPEED;
 		}
+		OldDirection = currentDirection;
 	}
 	
 	/**
@@ -184,13 +187,14 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][REPAINT DEBUG]");
 		Graphics g = this.panel.getGraphics();
 		g.setColor(c);
+		
 		g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height);
 	}
 	
 	/**
 	 *  Metodo che implementa l'ascoltatre alla pressioni delle frecce.
 	 *  Cambia solo la direzione corrente della moto, dato che il movimento 
-	 *  è automatico
+	 *  è automatico, Faccio il controllo e non permetto alla moto di ritornare indietro
 	 */
 	@Override
 	public void keyReleased(KeyEvent e)
@@ -198,16 +202,16 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		int keyCode = e.getKeyCode();
 	    switch( keyCode ) { 
 	        case KeyEvent.VK_UP:
-	            this.currentDirection = "N";
+	            if(OldDirection != "S") this.currentDirection = "N";
 	            break;
 	        case KeyEvent.VK_DOWN:
-	        	this.currentDirection = "S";
+	        	if(OldDirection != "N") this.currentDirection = "S";
 	            break;
 	        case KeyEvent.VK_LEFT:
-	        	this.currentDirection = "W";
+	        	if (OldDirection != "E")this.currentDirection = "W";
 	            break;
 	        case KeyEvent.VK_RIGHT :
-	        	this.currentDirection = "E";
+	        	if(OldDirection != "W")this.currentDirection = "E";
 	            break;
 	     }
 	}
