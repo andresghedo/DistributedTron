@@ -9,8 +9,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.ServerNotActiveException;
+import java.text.ParseException;
 
 import graphics.StartPanel;
+import graphics.WindowUtility;
 import network.Controller;
 import network.Host;
 import network.NetworkUtility;
@@ -54,8 +56,9 @@ public class StartPlay {
 	 * @throws NotBoundException 
 	 * @throws InterruptedException 
 	 * @throws ServerNotActiveException 
+	 * @throws ParseException 
 	 */
-	public static void main(String[] args) throws RemoteException, UnknownHostException, SocketException, AlreadyBoundException, NotBoundException, InterruptedException, ServerNotActiveException {
+	public static void main(String[] args) throws RemoteException, UnknownHostException, SocketException, AlreadyBoundException, NotBoundException, InterruptedException, ServerNotActiveException, ParseException {
 		// istanziazione della finestra di configurazione dei
 		// parametri della partita
 		new StartPanel();

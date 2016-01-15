@@ -12,17 +12,22 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
+import java.text.ParseException;
+import java.util.StringTokenizer;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.MaskFormatter;
 
 import network.NetworkUtility;
 import start.StartPlay;
@@ -37,7 +42,7 @@ public class StartPanel implements ChangeListener, ActionListener {
 	private JLabel usernameLabel;
 	private JTextField usernameField;
 	private JLabel serverIpLabel;
-	private JTextField ipField;
+	private JFormattedTextField ipField;
 	private JCheckBox serverCheckBox;
 	private JLabel nplayersLabel;
 	private JTextField nplayersField;
@@ -48,15 +53,15 @@ public class StartPanel implements ChangeListener, ActionListener {
 	private String username;
 	private int nPlayers;
 
-	public StartPanel() {
+	public StartPanel() throws ParseException {
 		// Instanzazione degli elementi grafici della finestra
 		jFrame = new JFrame("Impostazioni di Gioco");
 		SpringLayout layout = new SpringLayout();
 		panel = new JPanel(layout);
-		usernameLabel = new JLabel("SERVER Username:");
+		usernameLabel = new JLabel("Username:");
 		usernameField = new JTextField(10);
 		serverIpLabel = new JLabel("SERVER IP:");
-		ipField = new JTextField(10);
+		ipField = new JFormattedTextField(new MaskFormatter("1##.###.###.###"));
 		serverCheckBox = new JCheckBox("Sono il server");
 		nplayersLabel = new JLabel("N. di giocatori:");
 		nplayersField = new JTextField(2);
@@ -67,6 +72,7 @@ public class StartPanel implements ChangeListener, ActionListener {
 		jFrame.setSize(WIDTH, HEIGHT);
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panel.setBackground(Color.LIGHT_GRAY);
+		ipField.setColumns(10);
 		nplayersLabel.setVisible(false);
 		nplayersField.setVisible(false);
 		showIPLabel.setVisible(false);
@@ -75,10 +81,10 @@ public class StartPanel implements ChangeListener, ActionListener {
 		// aggiunta dei listener alla checkbox ed al button di connessione
 		serverCheckBox.addChangeListener(this);
 		connectButton.addActionListener(this);
-		
+
 		// posizionamento degli elementi grafici
 		setLayoutConstraints(layout);
-		
+
 		// aggiunta degli elementi grafici al panel ed al frame principale
 		panel.add(usernameLabel);
 		panel.add(usernameField);
@@ -92,24 +98,25 @@ public class StartPanel implements ChangeListener, ActionListener {
 		jFrame.add(panel);
 
 		WindowUtility.centerWindow(jFrame);
+		jFrame.setResizable(false);
 		jFrame.setVisible(true);
 	}
-	
-	/** 
+
+	/**
 	 * Metodo che si occupa di impostare il posizionamento degli elementi
 	 * grafici nella finestra
-	 *  
-	 *  @param layout
+	 * 
+	 * @param layout
 	 */
 	private void setLayoutConstraints(SpringLayout layout) {
 
 		layout.putConstraint(SpringLayout.WEST, usernameLabel, 10, SpringLayout.WEST, panel);
 		layout.putConstraint(SpringLayout.NORTH, usernameLabel, 22, SpringLayout.NORTH, panel);
-		layout.putConstraint(SpringLayout.WEST, usernameField, 65, SpringLayout.EAST, serverIpLabel);
+		layout.putConstraint(SpringLayout.WEST, usernameField, 10, SpringLayout.EAST, serverIpLabel);
 		layout.putConstraint(SpringLayout.NORTH, usernameField, 20, SpringLayout.NORTH, panel);
 		layout.putConstraint(SpringLayout.WEST, serverIpLabel, 10, SpringLayout.WEST, panel);
 		layout.putConstraint(SpringLayout.NORTH, serverIpLabel, 32, SpringLayout.NORTH, usernameLabel);
-		layout.putConstraint(SpringLayout.WEST, ipField, 5, SpringLayout.EAST, serverIpLabel);
+		layout.putConstraint(SpringLayout.WEST, ipField, 10, SpringLayout.EAST, serverIpLabel);
 		layout.putConstraint(SpringLayout.NORTH, ipField, 30, SpringLayout.NORTH, usernameField);
 		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, ipField, 0, SpringLayout.HORIZONTAL_CENTER, panel);
 		layout.putConstraint(SpringLayout.NORTH, serverCheckBox, 10, SpringLayout.SOUTH, ipField);
@@ -123,7 +130,7 @@ public class StartPanel implements ChangeListener, ActionListener {
 		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, connectButton, 0, SpringLayout.HORIZONTAL_CENTER, panel);
 		layout.putConstraint(SpringLayout.NORTH, connectButton, 10, SpringLayout.SOUTH, showIPLabel);
 	}
-	
+
 	// listener della checkbox server
 	@Override
 	public void stateChanged(ChangeEvent e) {
@@ -149,38 +156,86 @@ public class StartPanel implements ChangeListener, ActionListener {
 			showIPLabel.setText("");
 		}
 	}
-	
+
 	// listener del button di connessione
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		try {
-			setUsername(usernameField.getText());
-			if (serverCheckBox.isSelected()) {
-				setServerIP("SERVER");
-				setNPlayers(Integer.parseInt(nplayersField.getText()));
-			} else {
-				setServerIP(ipField.getText());
+		if (checkErrors()) {
+			try {
+				setUsername(usernameField.getText());
+				if (serverCheckBox.isSelected()) {
+					setServerIP("SERVER");
+					setNPlayers(Integer.parseInt(nplayersField.getText()));
+				} else {
+					setServerIP(ipField.getText());
+				}
+				StartPlay.connect(this);
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			} catch (UnknownHostException e1) {
+				e1.printStackTrace();
+			} catch (SocketException e1) {
+				e1.printStackTrace();
+			} catch (AlreadyBoundException e1) {
+				e1.printStackTrace();
+			} catch (NotBoundException e1) {
+				e1.printStackTrace();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			} catch (ServerNotActiveException e1) {
+				e1.printStackTrace();
 			}
-			StartPlay.connect(this);
-			WindowUtility.closeWindow(jFrame);
-		} catch (RemoteException e1) {
-			e1.printStackTrace();
-		} catch (UnknownHostException e1) {
-			e1.printStackTrace();
-		} catch (SocketException e1) {
-			e1.printStackTrace();
-		} catch (AlreadyBoundException e1) {
-			e1.printStackTrace();
-		} catch (NotBoundException e1) {
-			e1.printStackTrace();
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		} catch (ServerNotActiveException e1) {
-			e1.printStackTrace();
 		}
 	}
-	
+
+	private boolean checkErrors() {
+		boolean ok = true;
+		String errorText = "";
+		String username = usernameField.getText();
+		String ip = ipField.getText();
+
+		if (username.isEmpty()) {
+			errorText += "Inserire l'username\n";
+			ok = false;
+		}
+
+		if (serverCheckBox.isSelected()) {
+			try {
+				int nPlayers = Integer.parseInt(nplayersField.getText());
+				if (nPlayers == 0) {
+					errorText += "Inserire almeno un giocatore\n";
+					ok = false;
+				}
+			} catch (NumberFormatException e1) {
+				errorText += "Inserire un numero di giocatori valido\n";
+				ok = false;
+			}
+		} else {
+			StringTokenizer st = new StringTokenizer(ip, ".");
+			boolean ipIncorrect = false;
+			while (st.hasMoreTokens()) {
+				try {
+					int value = Integer.parseInt(st.nextToken());
+					if (value < 0 || value > 255) {
+						ipIncorrect = true;
+					}
+				} catch (NumberFormatException e1) {
+					ipIncorrect = true;
+				}
+			}
+			if (ipIncorrect) {
+				errorText += "Inserire un IP valido!\n";
+			}
+		}
+
+		if (!ok) {
+			JOptionPane.showMessageDialog(new JFrame(), errorText, "ATTENZIONE", JOptionPane.ERROR_MESSAGE);
+		}
+
+		return ok;
+	}
+
 	// GETTERS e SETTERS
 	public void setUsername(String username) {
 		this.username = username;
@@ -206,4 +261,7 @@ public class StartPanel implements ChangeListener, ActionListener {
 		return this.nPlayers;
 	}
 
+	public JFrame getJFrame() {
+		return this.jFrame;
+	}
 }
