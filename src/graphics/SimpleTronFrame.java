@@ -17,6 +17,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import registration.Player;
+
 import network.Controller;
 import network.RmiMessage;
 
@@ -37,13 +39,16 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	/** RETTANGOLO CHE RAPPRESENTA LA MOTO */
 	public Rectangle motorbike;
 	/** BOOLEANO CHE INDICA GIOCO ATTIVO O MENO */
-	public boolean started;
+	public boolean started = false ;
 	/** DIREZIONE CORRENTE DELLA MOTO */
 	public String currentDirection;
 	//Si ricorda della direzzione attuale della moto
 	public String OldDirection;
 	public Timer timer;
 	
+	//Contiene il mio nome da giocaotore
+	public String MyName ;
+			//Controller.getInstance().getMyPlayer().getUsername();
 	/** 
 	 *  COSTRUTTORE DI CLASSE 
 	 *	setta il JFrame ed il Jpanel per la grafica e fa partire il gioco,
@@ -61,11 +66,13 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		jframe.setSize(WIDTH, HEIGHT);
 		jframe.addKeyListener(this);
 		jframe.setResizable(false);
+		WindowUtility.centerWindow(jframe);
 		jframe.setVisible(true);
 
 		motorbike = new Rectangle(Controller.getInstance().getMyPlayer().getStartXPos(), HEIGHT-32, SIZE_MOTO, SIZE_MOTO);
 		panel.getGraphics().setColor(Color.black);
 		panel.getGraphics().fillRect(0, 0, WIDTH, HEIGHT);
+		MyName = Controller.getInstance().getMyPlayer().getUsername();
 		this.startGame(timer);
 	}
 	
@@ -128,9 +135,12 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	 * Metodo che disegna graficamente la moto sul JPanel
 	 */
 	public void drawMoto(Graphics g) {
-	
+		
+		
 		if (this.currentDirection.equals("N")) {
 			g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height+SPEED);
+			
+			//g.drawString("Emulk", motorbike.x+10, motorbike.y+10);
 		}
 		else if (this.currentDirection.equals("S")) {
 			g.fillRect(motorbike.x, motorbike.y-SPEED, motorbike.width, motorbike.height+SPEED);
@@ -154,7 +164,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			panel.getGraphics().setColor(Color.black);
 			panel.getGraphics().fillRect(0, 0, WIDTH, HEIGHT);
 			this.currentDirection = "N";
+			
 			started = true;
+			
 		}
 	}
 	
@@ -163,10 +175,18 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	 */
 	public void repaint()
 	{
-		Graphics g = this.panel.getGraphics();
 		
+		Graphics g = this.panel.getGraphics();
+		g.setColor(Controller.getInstance().getMyPlayer().getColor());
+		
+		g.drawString(MyName, WIDTH/2, 15);
+		//Disegna i bordi della pista
+		g.drawLine(0, 0, 0, HEIGHT);
+		g.drawLine(0, 0, WIDTH, 0);
+		g.drawLine(WIDTH-1, 0, WIDTH-1, HEIGHT-1);
+		g.drawLine(0, HEIGHT-1, WIDTH-2, HEIGHT-1);
 		if(started) {
-			g.setColor(Controller.getInstance().getMyPlayer().getColor());
+			
 			this.drawMoto(g);
 		}
 		else {
@@ -175,6 +195,8 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			g.setColor(Color.red);
 			g.setFont(new Font("Arial", 1, 20));
 			g.drawString("KEY UP TO START!", 15, HEIGHT / 10);
+;
+			
 		}
 	}
 	
