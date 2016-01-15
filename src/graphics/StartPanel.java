@@ -42,7 +42,7 @@ public class StartPanel implements ChangeListener, ActionListener {
 	private JLabel usernameLabel;
 	private JTextField usernameField;
 	private JLabel serverIpLabel;
-	private JFormattedTextField ipField;
+	private JTextField ipField;
 	private JCheckBox serverCheckBox;
 	private JLabel nplayersLabel;
 	private JTextField nplayersField;
@@ -61,7 +61,7 @@ public class StartPanel implements ChangeListener, ActionListener {
 		usernameLabel = new JLabel("Username:");
 		usernameField = new JTextField(10);
 		serverIpLabel = new JLabel("SERVER IP:");
-		ipField = new JFormattedTextField(new MaskFormatter("1##.###.###.###"));
+		ipField = new JTextField("130.136.0.0", 10);
 		serverCheckBox = new JCheckBox("Sono il server");
 		nplayersLabel = new JLabel("N. di giocatori:");
 		nplayersField = new JTextField(2);
@@ -72,7 +72,6 @@ public class StartPanel implements ChangeListener, ActionListener {
 		jFrame.setSize(WIDTH, HEIGHT);
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panel.setBackground(Color.LIGHT_GRAY);
-		ipField.setColumns(10);
 		nplayersLabel.setVisible(false);
 		nplayersField.setVisible(false);
 		showIPLabel.setVisible(false);
@@ -212,20 +211,31 @@ public class StartPanel implements ChangeListener, ActionListener {
 				ok = false;
 			}
 		} else {
-			StringTokenizer st = new StringTokenizer(ip, ".");
-			boolean ipIncorrect = false;
-			while (st.hasMoreTokens()) {
-				try {
-					int value = Integer.parseInt(st.nextToken());
-					if (value < 0 || value > 255) {
-						ipIncorrect = true;
-					}
-				} catch (NumberFormatException e1) {
+			if (ip.isEmpty()) {
+				errorText += "Inserire un l'IP del SERVER\n";
+				ok = false;
+			} else {
+				String[] st = ip.split("\\.");
+				boolean ipIncorrect = false;
+				if (st.length < 4) {
 					ipIncorrect = true;
+				} else {
+					for (int i = 0; i < st.length; i++) {
+						try {
+							int value = Integer.parseInt(st[i]);
+							if (value < 0 || value > 255) {
+								ipIncorrect = true;
+							}
+						} catch (NumberFormatException e1) {
+							ipIncorrect = true;
+						}
+					}
 				}
-			}
-			if (ipIncorrect) {
-				errorText += "Inserire un IP valido!\n";
+				
+				if (ipIncorrect) {
+					errorText += "Inserire un IP valido!\n";
+					ok = false;
+				}
 			}
 		}
 
