@@ -10,6 +10,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.ServerNotActiveException;
 
+import graphics.StartPanel;
 import network.Controller;
 import network.Host;
 import network.NetworkUtility;
@@ -41,6 +42,7 @@ public class StartPlay {
 
 	private static int PORT = 1234;
 	private static Registry registry;
+	
 	/**
 	 * Metodo di inizio, Main.
 	 * @param args
@@ -53,13 +55,30 @@ public class StartPlay {
 	 * @throws InterruptedException 
 	 * @throws ServerNotActiveException 
 	 */
-	public static void main(String[] args) throws RemoteException, AlreadyBoundException, UnknownHostException, SocketException, NotBoundException, InterruptedException, ServerNotActiveException {
-		String IP = args[0];
+	public static void main(String[] args) throws RemoteException, UnknownHostException, SocketException, AlreadyBoundException, NotBoundException, InterruptedException, ServerNotActiveException {
+		// istanziazione della finestra di configurazione dei
+		// parametri della partita
+		new StartPanel();
+	}
+	
+	/**
+	 * Connessione alla partita
+	 * @param sp finestra di configurazione
+	 * @throws RemoteException
+	 * @throws AlreadyBoundException
+	 * @throws UnknownHostException
+	 * @throws SocketException
+	 * @throws NotBoundException
+	 * @throws InterruptedException
+	 * @throws ServerNotActiveException
+	 */
+	public static void connect(StartPanel sp) throws RemoteException, AlreadyBoundException, UnknownHostException, SocketException, NotBoundException, InterruptedException, ServerNotActiveException {
+		String IP = sp.getServerIP();
 		if (IP.equals("SERVER")) {
-			int nPlayers = Integer.parseInt(args[1]);
-			String username = args[2];
-			if ((args.length == 4) && (args[3].equals("GUI")))
-				Controller.getInstance().setShowGUI(true);
+			int nPlayers = sp.getNPlayers();
+			String username = sp.getUsername();
+			//if ((args.length == 4) && (args[3].equals("GUI")))
+			Controller.getInstance().setShowGUI(true);
 		    Host myHost = new Host(NetworkUtility.getInstance().getHostAddress(), 1234);
 		    Player myPlayer = new Player(username, myHost, null);
 		    Controller.getInstance().setMyPlayer(myPlayer);
@@ -68,14 +87,13 @@ public class StartPlay {
 		}
 		//se gioco da solo
 		else if (IP.startsWith("1")) {
-			
 			startDeamon();
 			InterfaceRemoteMethodRegistration registrationServer = null;
 			Registry register = LocateRegistry.getRegistry(IP, PORT);
 			registrationServer = (InterfaceRemoteMethodRegistration) register.lookup("RegistrationService");    
-			String username = args[1];
-			if ((args.length == 3) && (args[2].equals("GUI")))
-				Controller.getInstance().setShowGUI(true);
+			String username = sp.getUsername();
+			//if ((args.length == 3) && (args[2].equals("GUI")))
+			Controller.getInstance().setShowGUI(true);
 			Host myHost = new Host(NetworkUtility.getInstance().getHostAddress(), 1234);
 			Player myPlayer = new Player(username, myHost, null);
 			Controller.getInstance().setMyPlayer(myPlayer);
