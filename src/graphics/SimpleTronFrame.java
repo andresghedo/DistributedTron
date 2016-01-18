@@ -11,6 +11,7 @@ import java.awt.event.KeyListener;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.swing.JFrame;
@@ -48,10 +49,13 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	
 	private int i = 0;
 	//Imposti la larghezza dei bordi
-	private int NumLinee = 5;
+	private int NumLines = 5;
 	//Contiene il mio nome da giocaotore
 	public String MyName ;
-			//Controller.getInstance().getMyPlayer().getUsername();
+	//contiene il mio attuale punteggio
+	private int Punteggio = 0;
+	
+	private ArrayList<Positions> positions= new ArrayList<Positions>();
 	/** 
 	 *  COSTRUTTORE DI CLASSE 
 	 *	setta il JFrame ed il Jpanel per la grafica e fa partire il gioco,
@@ -136,28 +140,65 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	}
 
 	/**
-	 * Metodo che disegna graficamente la moto sul JPanel
+	 * Metodo che disegna graficamente la moto sul JPanel e controlla di non andare a sbattere sulla propria scia
 	 */
 	public void drawMoto(Graphics g) {
-		Rectangle rectPixelColor;
+//		Punteggio++;
+//		String visualPunteggio = Integer.toString(Punteggio);
+//		g.drawString(" : "+visualPunteggio, (WIDTH/2)+MyName.length(), 15);
+//		
+		Positions CurrentPositions = new Positions(motorbike.x,motorbike.y);
+
 		//Se esco fuori dai bordi ho perso
-		if(motorbike.x < (0+NumLinee) || motorbike.x > (WIDTH-NumLinee) || motorbike.y < (0+NumLinee) || motorbike.y > (HEIGHT-NumLinee)){
+		if(motorbike.x < (0+NumLines) || motorbike.x > (WIDTH-NumLines) || motorbike.y < (0+NumLines) || motorbike.y > (HEIGHT-NumLines)){
 			System.exit(0);
 		}
 		
+		//altrimenti vuol dire che sono all'interno del riquadro giusto e posso continuare a giocare
 		if (this.currentDirection.equals("N")) {
-//			rectPixelColor=ClipRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height+SPEED);
-			g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height+SPEED);
+			for(int i =0; i<SPEED; i++){
+				
+				g.fillRect(motorbike.x, motorbike.y-1, motorbike.width, motorbike.height);
+			}
+			Positions newPositions = new Positions(motorbike.x, motorbike.y);
+			if(findPositions(newPositions)){
+				System.exit(0);
+			}
 		}
 		else if (this.currentDirection.equals("S")) {
-			g.fillRect(motorbike.x, motorbike.y-SPEED, motorbike.width, motorbike.height+SPEED);
+			for(int i =0; i<SPEED; i++){
+				
+				g.fillRect(motorbike.x, motorbike.y+1, motorbike.width, motorbike.height);
+			}
+			Positions newPositions = new Positions(motorbike.x, motorbike.y);
+			if(findPositions(newPositions)){
+				System.exit(0);
+			}
+			
 		}
 		else if (this.currentDirection.equals("W")) {
-			g.fillRect(motorbike.x, motorbike.y, motorbike.width+SPEED, motorbike.height);
+			for(int i =0; i<SPEED; i++){
+				g.fillRect(motorbike.x-1, motorbike.y, motorbike.width, motorbike.height);
+			}
+			Positions newPositions = new Positions(motorbike.x, motorbike.y);
+			if(findPositions(newPositions)){
+				System.exit(0);
+			}
+			
 		}
 		else if (this.currentDirection.equals("E")) {
-			g.fillRect(motorbike.x-SPEED, motorbike.y, motorbike.width+SPEED, motorbike.height);
+			for(int i =0; i<SPEED; i++){
+				
+				g.fillRect(motorbike.x+1, motorbike.y, motorbike.width, motorbike.height);
+			}
+			Positions newPositions = new Positions(motorbike.x, motorbike.y);
+			if(findPositions(newPositions)){
+				System.exit(0);
+			}
 		}
+		
+		positions.add(CurrentPositions);
+
 	}
 	
 	/**
@@ -169,7 +210,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			t.start();
 			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][STARTING GUI FRAME]");
 			panel.getGraphics().setColor(Color.black);
-			panel.getGraphics().fillRect(0, 0, WIDTH, HEIGHT);
+			//panel.getGraphics().fillRect(0, 0, WIDTH, HEIGHT);
 			this.currentDirection = "N";
 			
 			started = true;
@@ -185,11 +226,11 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		
 		Graphics g = this.panel.getGraphics();
 		g.setColor(Controller.getInstance().getMyPlayer().getColor());
-		
 		//scrivo il mio nome a video
 		g.drawString(MyName, WIDTH/2, 15);
+		
 		//Disegna i bordi della pista
-		for(i=0; i< NumLinee; i++){
+		for(i=0; i< NumLines; i++){
 			g.drawLine(i, 0, i, HEIGHT);
 			g.drawLine(0, i, WIDTH, i);
 			g.drawLine(WIDTH-i, 0, WIDTH-i, HEIGHT-1);
@@ -224,6 +265,20 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height);
 	}
 	
+	private boolean findPositions(Positions currentPositions){
+		boolean find = false;
+		for(Positions p: positions){
+			if(p.getX() == currentPositions.getX() && p.getY() == currentPositions.getY()){
+//				System.out.println(currentPositions.getX()+","+currentPositions.getY());
+//				System.out.println(p.getX()+","+p.getY());
+				find = true;
+				break;
+			}
+		}
+		return find;
+		
+	}
+	
 	/**
 	 *  Metodo che implementa l'ascoltatre alla pressioni delle frecce.
 	 *  Cambia solo la direzione corrente della moto, dato che il movimento 
@@ -249,6 +304,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	     }
 	}
 
+	
 	@Override
 	public void keyTyped(KeyEvent e)
 	{
