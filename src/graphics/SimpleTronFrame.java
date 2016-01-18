@@ -46,6 +46,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	public String OldDirection;
 	public Timer timer;
 	
+	private int i = 0;
+	//Imposti la larghezza dei bordi
+	private int NumLinee = 5;
 	//Contiene il mio nome da giocaotore
 	public String MyName ;
 			//Controller.getInstance().getMyPlayer().getUsername();
@@ -72,6 +75,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		motorbike = new Rectangle(Controller.getInstance().getMyPlayer().getStartXPos(), HEIGHT-32, SIZE_MOTO, SIZE_MOTO);
 		panel.getGraphics().setColor(Color.black);
 		panel.getGraphics().fillRect(0, 0, WIDTH, HEIGHT);
+		//Il mio nome
 		MyName = Controller.getInstance().getMyPlayer().getUsername();
 		this.startGame(timer);
 	}
@@ -130,17 +134,20 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		}
 		OldDirection = currentDirection;
 	}
-	
+
 	/**
 	 * Metodo che disegna graficamente la moto sul JPanel
 	 */
 	public void drawMoto(Graphics g) {
-		
+		Rectangle rectPixelColor;
+		//Se esco fuori dai bordi ho perso
+		if(motorbike.x < (0+NumLinee) || motorbike.x > (WIDTH-NumLinee) || motorbike.y < (0+NumLinee) || motorbike.y > (HEIGHT-NumLinee)){
+			System.exit(0);
+		}
 		
 		if (this.currentDirection.equals("N")) {
+//			rectPixelColor=ClipRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height+SPEED);
 			g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height+SPEED);
-			
-			//g.drawString("Emulk", motorbike.x+10, motorbike.y+10);
 		}
 		else if (this.currentDirection.equals("S")) {
 			g.fillRect(motorbike.x, motorbike.y-SPEED, motorbike.width, motorbike.height+SPEED);
@@ -179,12 +186,16 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		Graphics g = this.panel.getGraphics();
 		g.setColor(Controller.getInstance().getMyPlayer().getColor());
 		
+		//scrivo il mio nome a video
 		g.drawString(MyName, WIDTH/2, 15);
 		//Disegna i bordi della pista
-		g.drawLine(0, 0, 0, HEIGHT);
-		g.drawLine(0, 0, WIDTH, 0);
-		g.drawLine(WIDTH-1, 0, WIDTH-1, HEIGHT-1);
-		g.drawLine(0, HEIGHT-1, WIDTH-2, HEIGHT-1);
+		for(i=0; i< NumLinee; i++){
+			g.drawLine(i, 0, i, HEIGHT);
+			g.drawLine(0, i, WIDTH, i);
+			g.drawLine(WIDTH-i, 0, WIDTH-i, HEIGHT-1);
+			g.drawLine(0, HEIGHT-i, WIDTH-2, HEIGHT-i);
+		}
+		
 		if(started) {
 			
 			this.drawMoto(g);
