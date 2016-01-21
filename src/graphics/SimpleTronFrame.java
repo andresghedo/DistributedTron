@@ -153,7 +153,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	 * Metodo che disegna graficamente la moto sul JPanel e controlla di non andare a sbattere sulla propria scia
 	 */
 	public void drawMoto(Graphics g) {
-//		Score++;
+		Score++;
 ////		String visualPunteggio = Integer.toString(Score);
 //		// TODO
 //		g.drawString(" : "+Integer.toString(Score), (WIDTH/2)+MyName.length(), 15);
@@ -166,7 +166,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		//Se esco fuori dai bordi ho perso
 		if(motorbike.x < (0+NumLines) || motorbike.x > (WIDTH-NumLines) || motorbike.y < (0+NumLines) || motorbike.y > (HEIGHT-NumLines)){
 			started = false ;
-			clearPositions(g,MyOldPositions);
+			
+			JOptionPane.showMessageDialog(new JFrame(), Score, "Uscita", JOptionPane.INFORMATION_MESSAGE);
+			clearPositions(g,OnlyMyPositions);
 			System.exit(0);
 		}
 		
@@ -179,10 +181,11 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
 			for (int i =0; i < AllPlayers.size(); i++){
 				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
-				if(findPositions(newPositions,OldPlayersPositions) || findPositions(newPositions,OnlyMyPositions)){
+				if(findPositions(newPositions,OldPlayersPositions) ){
 					
-					JOptionPane.showMessageDialog(new JFrame(), "Hai Perso", "Uscita", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(new JFrame(), Score, "Uscita", JOptionPane.INFORMATION_MESSAGE);
 					clearPositions(g,OnlyMyPositions);
+					System.exit(0);
 				} 
 			}
 			
@@ -198,9 +201,11 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
 			for (int i =0; i < AllPlayers.size(); i++){
 				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
-				if(findPositions(newPositions,OldPlayersPositions) || findPositions(newPositions,OnlyMyPositions)){
-					JOptionPane.showMessageDialog(new JFrame(), "Hai Perso", "Uscita", JOptionPane.INFORMATION_MESSAGE);
+				if(findPositions(newPositions,OldPlayersPositions) ){
+					
+					JOptionPane.showMessageDialog(new JFrame(), Score, "Uscita", JOptionPane.INFORMATION_MESSAGE);
 					clearPositions(g,OnlyMyPositions);
+					System.exit(0);
 				} 
 			}
 		}
@@ -212,9 +217,11 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
 			for (int i =0; i < AllPlayers.size(); i++){
 				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
-				if(findPositions(newPositions,OldPlayersPositions) || findPositions(newPositions,OnlyMyPositions)){
-					JOptionPane.showMessageDialog(new JFrame(), "Hai Perso", "Uscita", JOptionPane.INFORMATION_MESSAGE);
+				if(findPositions(newPositions,OldPlayersPositions) ){
+					
+					JOptionPane.showMessageDialog(new JFrame(), Score, "Uscita", JOptionPane.INFORMATION_MESSAGE);
 					clearPositions(g,OnlyMyPositions);
+					System.exit(0);
 				} 
 			}
 			
@@ -228,17 +235,20 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
 			for (int i =0; i < AllPlayers.size(); i++){
 				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
-				if(findPositions(newPositions,OldPlayersPositions) || findPositions(newPositions,OnlyMyPositions)){
+				if(findPositions(newPositions,OldPlayersPositions) ){
 					
-					//System.exit(0);
+					
 					JOptionPane.showMessageDialog(new JFrame(), "Hai Perso", "Uscita", JOptionPane.INFORMATION_MESSAGE);
 					clearPositions(g,OnlyMyPositions);
+					System.exit(0);
 				} 
 			}
 		}
 		
 		MyOldestPositions.add(CurrentPositions);
 		OnlyMyPositions.add(CurrentPositions);
+		Player p = Controller.getInstance().getMyPlayer();
+		p.getCoordinatesPlayer().add(new Positions(motorbike.x,motorbike.y));
 
 	}
 	
@@ -302,17 +312,12 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][REPAINT DEBUG]");
 		Graphics g = this.panel.getGraphics();
 		g.setColor(c);
-		Color myColor = Controller.getInstance().getMyPlayer().getColor();
 		Positions pos = new Positions(motorbike.x, motorbike.y);
 		
 		for(int i = 0; i < AllPlayers.size(); i++){
 			ArrayList<Positions> myPositions = AllPlayers.get(i).getCoordinatesPlayer();
 			if (findPositions(pos, myPositions)) {
 				clearPositions(g, myPositions);		
-				if (c.equals(myColor)) {
-					//System.exit(0);
-					System.out.println("color");
-				}
 			}
 		}
 		
