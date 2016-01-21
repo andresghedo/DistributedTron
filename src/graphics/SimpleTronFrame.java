@@ -309,7 +309,8 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			if (findPositions(pos, myPositions)) {
 				clearPositions(g, myPositions);		
 				if (c.equals(myColor)) {
-					System.exit(0);
+					//System.exit(0);
+					System.out.println("color");
 				}
 			}
 		}
