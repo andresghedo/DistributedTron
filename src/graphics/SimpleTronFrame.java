@@ -59,7 +59,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	
 	
 	//Array con le mie coordinate esplorate
-	//private ArrayList<Positions> positions= new ArrayList<Positions>();
+	private ArrayList<Positions> MyOldPositions= new ArrayList<Positions>();
 	
 	/** 
 	 *  COSTRUTTORE DI CLASSE 
@@ -156,10 +156,11 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 //		// TODO
 //		g.drawString(" : "+Integer.toString(Score), (WIDTH/2)+MyName.length(), 15);
 		
-		
-		ArrayList<Positions> MyOldPositions = Controller.getInstance().getMyPlayer().getCoordinatesPlayer();
 		Positions CurrentPositions = new Positions(motorbike.x,motorbike.y);
 		
+		ArrayList<Positions> MyOldestPositions = Controller.getInstance().getMyPlayer().getCoordinatesPlayer();
+		
+
 		//Se esco fuori dai bordi ho perso
 		if(motorbike.x < (0+NumLines) || motorbike.x > (WIDTH-NumLines) || motorbike.y < (0+NumLines) || motorbike.y > (HEIGHT-NumLines)){
 			//System.exit(0);
@@ -170,69 +171,72 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		//altrimenti vuol dire che sono all'interno del riquadro giusto e posso continuare a giocare
 		if (this.currentDirection.equals("N")) {
 			for(int i =0; i<SPEED; i++){
-				Positions newPositions = new Positions(motorbike.x, motorbike.y-1);
-				for(int a = 0; a < AllPlayers.size(); a++){
-					ArrayList<Positions> myPositions = AllPlayers.get(a).getCoordinatesPlayer();
-					if (findPositions(newPositions, myPositions)) {
-						clearPositions(g, myPositions);
-						started = false ;
-						
-					}
-				}
-				g.fillRect(motorbike.x, motorbike.y-1, motorbike.width, motorbike.height);
+					g.fillRect(motorbike.x, motorbike.y-1, motorbike.width, motorbike.height);
+					
 			}
+			Positions newPositions = new Positions(motorbike.x, motorbike.y);
+			for (int i =0; i < AllPlayers.size(); i++){
+				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
+				if(findPositions(newPositions,OldPlayersPositions)){
+					//System.exit(0);
+					started = false ;
+					clearPositions(g,OldPlayersPositions);
+				} 
+			}
+			
+			
 			
 		}
 		else if (this.currentDirection.equals("S")) {
 			for(int i =0; i<SPEED; i++){
-				Positions newPositions = new Positions(motorbike.x, motorbike.y+1);
-				for(int a = 0; a < AllPlayers.size(); a++){
-					ArrayList<Positions> myPositions = AllPlayers.get(a).getCoordinatesPlayer();
-					if (findPositions(newPositions, myPositions)) {
-						clearPositions(g, myPositions);
-						started = false ;
-						
-					}
-				}
+				
 				g.fillRect(motorbike.x, motorbike.y+1, motorbike.width, motorbike.height);
 			}
 			
-			
+			Positions newPositions = new Positions(motorbike.x, motorbike.y);
+			for (int i =0; i < AllPlayers.size(); i++){
+				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
+				if(findPositions(newPositions,OldPlayersPositions)){
+					//System.exit(0);
+					started = false ;
+					clearPositions(g,OldPlayersPositions);
+				} 
+			}
 		}
 		else if (this.currentDirection.equals("W")) {
 			for(int i =0; i<SPEED; i++){
-				Positions newPositions = new Positions(motorbike.x-1, motorbike.y);
-				for(int a = 0; a < AllPlayers.size(); a++){
-					ArrayList<Positions> myPositions = AllPlayers.get(a).getCoordinatesPlayer();
-					if (findPositions(newPositions, myPositions) ) {
-						clearPositions(g, myPositions);
-						started = false ;
-						
-					}
-				}
-				g.fillRect(motorbike.x-1, motorbike.y, motorbike.width, motorbike.height);
+				
+				g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height);
 			}
+			Positions newPositions = new Positions(motorbike.x, motorbike.y);
+			for (int i =0; i < AllPlayers.size(); i++){
+				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
+				if(findPositions(newPositions,OldPlayersPositions)){
+					//System.exit(0);
+					started = false ;
+					clearPositions(g,OldPlayersPositions);
+				} 
+			}
+			
 			
 		}
 		else if (this.currentDirection.equals("E")) {
 			for(int i =0; i<SPEED; i++){
-				Positions newPositions = new Positions(motorbike.x+1, motorbike.y);
-				for(int a = 0; a < AllPlayers.size(); a++){
-					ArrayList<Positions> myPositions = AllPlayers.get(a).getCoordinatesPlayer();
-					if (findPositions(newPositions, myPositions) ) {
-						clearPositions(g, myPositions);
-						started = false ;
-						
-					}
-				}
+				
 				g.fillRect(motorbike.x+1, motorbike.y, motorbike.width, motorbike.height);
 			}
-			
+			Positions newPositions = new Positions(motorbike.x, motorbike.y);
+			for (int i =0; i < AllPlayers.size(); i++){
+				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
+				if(findPositions(newPositions,OldPlayersPositions)){
+					//System.exit(0);
+					started = false ;
+					clearPositions(g,OldPlayersPositions);
+				} 
+			}
 		}
 		
-		
-		MyOldPositions.add(CurrentPositions);
-		
+		MyOldestPositions.add(CurrentPositions);
 
 	}
 	
