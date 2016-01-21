@@ -178,11 +178,10 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			for (int i =0; i < AllPlayers.size(); i++){
 				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
 				if(findPositions(newPositions,OldPlayersPositions)){
-					if (findPositions(newPositions, MyOldestPositions)) {
-						System.exit(0);
-					}
+					
 					started = false ;
 					clearPositions(g,OldPlayersPositions);
+					System.exit(0);
 				} 
 			}
 			
@@ -199,11 +198,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			for (int i =0; i < AllPlayers.size(); i++){
 				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
 				if(findPositions(newPositions,OldPlayersPositions)){
-					if (findPositions(newPositions, MyOldestPositions)) {
-						System.exit(0);
-					}
 					started = false ;
 					clearPositions(g,OldPlayersPositions);
+					System.exit(0);
 				} 
 			}
 		}
@@ -216,11 +213,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			for (int i =0; i < AllPlayers.size(); i++){
 				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
 				if(findPositions(newPositions,OldPlayersPositions)){
-					if (findPositions(newPositions, MyOldestPositions)) {
-						System.exit(0);
-					}
 					started = false ;
 					clearPositions(g,OldPlayersPositions);
+					System.exit(0);
 				} 
 			}
 			
@@ -235,11 +230,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			for (int i =0; i < AllPlayers.size(); i++){
 				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
 				if(findPositions(newPositions,OldPlayersPositions)){
-					if (findPositions(newPositions, MyOldestPositions)) {
-						System.exit(0);
-					}
 					started = false ;
 					clearPositions(g,OldPlayersPositions);
+					System.exit(0);
 				} 
 			}
 		}
