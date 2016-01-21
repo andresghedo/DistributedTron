@@ -163,9 +163,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 
 		//Se esco fuori dai bordi ho perso
 		if(motorbike.x < (0+NumLines) || motorbike.x > (WIDTH-NumLines) || motorbike.y < (0+NumLines) || motorbike.y > (HEIGHT-NumLines)){
-			//System.exit(0);
 			started = false ;
 			clearPositions(g,MyOldPositions);
+			System.exit(0);
 		}
 		
 		//altrimenti vuol dire che sono all'interno del riquadro giusto e posso continuare a giocare
@@ -301,13 +301,16 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][REPAINT DEBUG]");
 		Graphics g = this.panel.getGraphics();
 		g.setColor(c);
+		Color myColor = Controller.getInstance().getMyPlayer().getColor();
 		Positions pos = new Positions(motorbike.x, motorbike.y);
 		
 		for(int i = 0; i < AllPlayers.size(); i++){
 			ArrayList<Positions> myPositions = AllPlayers.get(i).getCoordinatesPlayer();
 			if (findPositions(pos, myPositions)) {
-				clearPositions(g, myPositions);
-				
+				clearPositions(g, myPositions);		
+				if (c.equals(myColor)) {
+					System.exit(0);
+				}
 			}
 		}
 		
