@@ -34,7 +34,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	/** UPDATE DELLA FINESTRA */
 	public final int TIMER_UPDATE = 20;
 	/** VELOCITA DELLA MOTO*/
-	public final int SPEED = 4;
+	public final int SPEED = 3;
 	/** PANNELLO DI DISEGNO */
 	public JPanel panel;
 	/** RETTANGOLO CHE RAPPRESENTA LA MOTO */
@@ -53,9 +53,14 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	//Contiene il mio nome da giocaotore
 	public String MyName ;
 	//contiene il mio attuale punteggio
-	private int Punteggio = 0;
+	private int Score = 0;
+	//numero di giocatori
+	private ArrayList<Player> AllPlayers;
 	
+	
+	//Array con le mie coordinate esplorate
 	private ArrayList<Positions> positions= new ArrayList<Positions>();
+	
 	/** 
 	 *  COSTRUTTORE DI CLASSE 
 	 *	setta il JFrame ed il Jpanel per la grafica e fa partire il gioco,
@@ -81,6 +86,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		panel.getGraphics().fillRect(0, 0, WIDTH, HEIGHT);
 		//Il mio nome
 		MyName = Controller.getInstance().getMyPlayer().getUsername();
+		
+		AllPlayers = Controller.getInstance().getRoom().getPlayers();
+		
 		this.startGame(timer);
 	}
 	
@@ -143,15 +151,18 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	 * Metodo che disegna graficamente la moto sul JPanel e controlla di non andare a sbattere sulla propria scia
 	 */
 	public void drawMoto(Graphics g) {
-//		Punteggio++;
-//		String visualPunteggio = Integer.toString(Punteggio);
-//		g.drawString(" : "+visualPunteggio, (WIDTH/2)+MyName.length(), 15);
-//		
+//		Score++;
+////		String visualPunteggio = Integer.toString(Score);
+//		// TODO
+//		g.drawString(" : "+Integer.toString(Score), (WIDTH/2)+MyName.length(), 15);
+		
 		Positions CurrentPositions = new Positions(motorbike.x,motorbike.y);
 
 		//Se esco fuori dai bordi ho perso
 		if(motorbike.x < (0+NumLines) || motorbike.x > (WIDTH-NumLines) || motorbike.y < (0+NumLines) || motorbike.y > (HEIGHT-NumLines)){
-			System.exit(0);
+			//System.exit(0);
+			started = false ;
+			clearPositions(g,positions);
 		}
 		
 		//altrimenti vuol dire che sono all'interno del riquadro giusto e posso continuare a giocare
@@ -161,8 +172,10 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 				g.fillRect(motorbike.x, motorbike.y-1, motorbike.width, motorbike.height);
 			}
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
-			if(findPositions(newPositions)){
-				System.exit(0);
+			if(findPositions(newPositions,positions)){
+				//System.exit(0);
+				started = false ;
+				clearPositions(g,positions);
 			}
 		}
 		else if (this.currentDirection.equals("S")) {
@@ -171,8 +184,10 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 				g.fillRect(motorbike.x, motorbike.y+1, motorbike.width, motorbike.height);
 			}
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
-			if(findPositions(newPositions)){
-				System.exit(0);
+			if(findPositions(newPositions,positions)){
+				//System.exit(0);
+				started = false ;
+				clearPositions(g,positions);
 			}
 			
 		}
@@ -181,8 +196,10 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 				g.fillRect(motorbike.x-1, motorbike.y, motorbike.width, motorbike.height);
 			}
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
-			if(findPositions(newPositions)){
-				System.exit(0);
+			if(findPositions(newPositions,positions)){
+				//System.exit(0);
+				started = false ;
+				clearPositions(g,positions);
 			}
 			
 		}
@@ -192,8 +209,10 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 				g.fillRect(motorbike.x+1, motorbike.y, motorbike.width, motorbike.height);
 			}
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
-			if(findPositions(newPositions)){
-				System.exit(0);
+			if(findPositions(newPositions,positions)){
+				//System.exit(0);
+				started = false ;
+				clearPositions(g,positions);
 			}
 		}
 		
@@ -261,11 +280,26 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][REPAINT DEBUG]");
 		Graphics g = this.panel.getGraphics();
 		g.setColor(c);
+		Positions pos = new Positions(motorbike.x, motorbike.y);
+		
+		for(int i = 0; i < AllPlayers.size(); i++){
+			ArrayList<Positions> myPositions = AllPlayers.get(i).getCoordinatesPlayer();
+			if (findPositions(pos, myPositions)) {
+				clearPositions(g, myPositions);
+				
+			}
+		}
+		
 		
 		g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height);
+		Player p = Controller.getInstance().getPlayerByColor(c);
+		p.getCoordinatesPlayer().add(new Positions(motorbike.x,motorbike.y));
+		
+		
 	}
 	
-	private boolean findPositions(Positions currentPositions){
+	// Controlla che le attuali coordinate di tron siano inesplorate
+	private boolean findPositions(Positions currentPositions, ArrayList<Positions> positions){
 		boolean find = false;
 		for(Positions p: positions){
 			if(p.getX() == currentPositions.getX() && p.getY() == currentPositions.getY()){
@@ -276,6 +310,18 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			}
 		}
 		return find;
+		
+	}
+	
+	//elimina le coordinate dei giocatori che perdono
+	public void clearPositions(Graphics g, ArrayList<Positions> positions){
+		g.setColor(Color.black);
+		for(Positions p: positions){
+			int a=p.getX();
+			int b = p.getY();
+			g.fillRect(a, b, motorbike.width, motorbike.height);
+		}
+		
 		
 	}
 	

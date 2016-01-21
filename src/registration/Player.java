@@ -1,7 +1,10 @@
 package registration;
 
+import graphics.Positions;
+
 import java.awt.Color;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import network.Host;
 
@@ -21,12 +24,15 @@ public class Player implements Serializable {
 	/** posizione iniziale della moto del player nell'interfaccia grafica */
 	private int startXPos;
 	
+	private ArrayList<Positions> CoordinatesPlayer;
+	
 	public Player() {}
 	
 	public Player(String u, Host h, Color c) {
 		this.username = u;
 		this.color = c;
 		this.host = h;
+		this.CoordinatesPlayer = new ArrayList<Positions>();
 	}
 	
 	public String getUsername() {
@@ -60,5 +66,15 @@ public class Player implements Serializable {
 	public void setStartXPos(int x) {
 		this.startXPos = x;
 	}
+
+	public ArrayList<Positions> getCoordinatesPlayer() {
+		return CoordinatesPlayer;
+	}
+
+	public void setCoordinatesPlayer(ArrayList<Positions> coordinatesPlayer) {
+		CoordinatesPlayer = coordinatesPlayer;
+	}
+	
+	
 
 }

@@ -1,6 +1,10 @@
 package graphics;
 
-//Tiene conto della posizione del player, andando a mettere le sue coordinate gia' esplorate in una pila
+/*
+ * Tiene conto della posizione del player, andando a mettere le sue coordinate gia' esplorate in una pila
+ * E ogni volta che esplora delle nuove coordinate controlla se c'e' gia' statto 
+ * 
+ */
 public class Positions {
 	
 	int x;

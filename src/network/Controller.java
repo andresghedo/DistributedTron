@@ -101,6 +101,16 @@ public class Controller {
 		return null;
 	}
 	
+	//prende in input un color e ti ritorna il giocatore che equivale a quell'colore
+	public Player getPlayerByColor(Color c){
+		for (int i =0; i < this.room.getPlayers().size(); i++){
+			if(this.room.getPlayers().get(i).getColor().equals(c)){
+				return this.room.getPlayers().get(i);
+			}
+		}
+		return null;
+	}
+	
 	public String getIpPlayerFromUUid(String uuid) {
 		for (int i=0; i<this.room.getPlayers().size(); i++) {
 			if(this.room.getPlayers().get(i).getHost().getUUID().equals(uuid))
