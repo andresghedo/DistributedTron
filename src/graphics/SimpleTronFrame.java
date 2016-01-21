@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -61,7 +62,8 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	//Array con le mie coordinate esplorate
 	private ArrayList<Positions> MyOldPositions= new ArrayList<Positions>();
 	
-	/** 
+	private ArrayList<Positions> OnlyMyPositions = new ArrayList<Positions>();
+	/**  
 	 *  COSTRUTTORE DI CLASSE 
 	 *	setta il JFrame ed il Jpanel per la grafica e fa partire il gioco,
 	 *  ovvero il timer per l'update della grafica e dei movimenti della moto.
@@ -177,11 +179,10 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
 			for (int i =0; i < AllPlayers.size(); i++){
 				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
-				if(findPositions(newPositions,OldPlayersPositions)){
+				if(findPositions(newPositions,OldPlayersPositions) || findPositions(newPositions,OnlyMyPositions)){
 					
-					started = false ;
-					clearPositions(g,OldPlayersPositions);
-					System.exit(0);
+					JOptionPane.showMessageDialog(new JFrame(), "Hai Perso", "Uscita", JOptionPane.INFORMATION_MESSAGE);
+					clearPositions(g,OnlyMyPositions);
 				} 
 			}
 			
@@ -197,10 +198,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
 			for (int i =0; i < AllPlayers.size(); i++){
 				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
-				if(findPositions(newPositions,OldPlayersPositions)){
-					started = false ;
-					clearPositions(g,OldPlayersPositions);
-					System.exit(0);
+				if(findPositions(newPositions,OldPlayersPositions) || findPositions(newPositions,OnlyMyPositions)){
+					JOptionPane.showMessageDialog(new JFrame(), "Hai Perso", "Uscita", JOptionPane.INFORMATION_MESSAGE);
+					clearPositions(g,OnlyMyPositions);
 				} 
 			}
 		}
@@ -212,10 +212,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
 			for (int i =0; i < AllPlayers.size(); i++){
 				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
-				if(findPositions(newPositions,OldPlayersPositions)){
-					started = false ;
-					clearPositions(g,OldPlayersPositions);
-					System.exit(0);
+				if(findPositions(newPositions,OldPlayersPositions) || findPositions(newPositions,OnlyMyPositions)){
+					JOptionPane.showMessageDialog(new JFrame(), "Hai Perso", "Uscita", JOptionPane.INFORMATION_MESSAGE);
+					clearPositions(g,OnlyMyPositions);
 				} 
 			}
 			
@@ -229,15 +228,17 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
 			for (int i =0; i < AllPlayers.size(); i++){
 				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
-				if(findPositions(newPositions,OldPlayersPositions)){
-					started = false ;
-					clearPositions(g,OldPlayersPositions);
-					System.exit(0);
+				if(findPositions(newPositions,OldPlayersPositions) || findPositions(newPositions,OnlyMyPositions)){
+					
+					//System.exit(0);
+					JOptionPane.showMessageDialog(new JFrame(), "Hai Perso", "Uscita", JOptionPane.INFORMATION_MESSAGE);
+					clearPositions(g,OnlyMyPositions);
 				} 
 			}
 		}
 		
 		MyOldestPositions.add(CurrentPositions);
+		OnlyMyPositions.add(CurrentPositions);
 
 	}
 	
