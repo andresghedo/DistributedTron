@@ -11,6 +11,7 @@ import java.awt.event.KeyListener;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -23,6 +24,8 @@ import registration.Player;
 
 import network.Controller;
 import network.RmiMessage;
+
+import graphics.StartPanel;
 
 public class SimpleTronFrame implements ActionListener, KeyListener
 {	
@@ -58,9 +61,14 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	//numero di giocatori
 	private ArrayList<Player> AllPlayers;
 	
+	private int NumPlayer = 0;
+	
+	JFrame jframe ;
 	
 	//Array con le mie coordinate esplorate
 	private ArrayList<Positions> MyOldPositions= new ArrayList<Positions>();
+	
+	private ArrayList<Positions> OponentPositions= new ArrayList<Positions>();
 	
 	private ArrayList<Positions> OnlyMyPositions = new ArrayList<Positions>();
 	/**  
@@ -70,7 +78,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	 * 
 	 */
 	public SimpleTronFrame() {
-		JFrame jframe = new JFrame();
+		jframe = new JFrame();
 		timer = new Timer(TIMER_UPDATE, this);
 		panel = new JPanel();
 		jframe.add(panel);
@@ -91,6 +99,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		
 		AllPlayers = Controller.getInstance().getRoom().getPlayers();
 		
+		NumPlayer = Controller.getInstance().getRoom().getPlayers().size();
 		this.startGame(timer);
 	}
 	
@@ -102,7 +111,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][ACTION PERFORMED]");
+//		System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][ACTION PERFORMED]");
 		
 		String uuid = Controller.getInstance().getMyHost().getUUID();
 		RmiMessage m = new RmiMessage(motorbike, uuid);
@@ -110,14 +119,14 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		try {
 			Controller.getInstance().getCommunication().getNextHostInterface().send(m);
 		} catch (RemoteException e1) {
-			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### REMOTE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+//			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### REMOTE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 		} catch (NotBoundException e1) {
-			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### NOTBOUND EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+//			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### NOTBOUND EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 		} catch (ServerNotActiveException e1) {
-			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### SERVERNOTACTIVE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+//			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### SERVERNOTACTIVE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 		} catch (NullPointerException e1) { // return perchè nessuno parte quando tutti non sono pronti ad implementare la grafica
 			//e1.printStackTrace();
-			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### NULLPOINTER EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+//			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "]########### NULLPOINTER EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 			return;
 		}
 		
@@ -162,93 +171,104 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		
 		ArrayList<Positions> MyOldestPositions = Controller.getInstance().getMyPlayer().getCoordinatesPlayer();
 		
+		System.out.println("Coordinate Mie Iniziali "+motorbike.x+" , "+motorbike.y);
 
 		//Se esco fuori dai bordi ho perso
 		if(motorbike.x < (0+NumLines) || motorbike.x > (WIDTH-NumLines) || motorbike.y < (0+NumLines) || motorbike.y > (HEIGHT-NumLines)){
 			started = false ;
 			
-			JOptionPane.showMessageDialog(new JFrame(), Score, "Uscita", JOptionPane.INFORMATION_MESSAGE);
 			clearPositions(g,OnlyMyPositions);
-			System.exit(0);
+			JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "+Score, "Hai Perso", JOptionPane.INFORMATION_MESSAGE);
+			//System.exit(0);
 		}
 		
 		//altrimenti vuol dire che sono all'interno del riquadro giusto e posso continuare a giocare
 		if (this.currentDirection.equals("N")) {
 			for(int i =0; i<SPEED; i++){
+				System.out.println("Coordinate Mie Nord"+motorbike.x+" , "+motorbike.y);
+
 					g.fillRect(motorbike.x, motorbike.y-1, motorbike.width, motorbike.height);
 					
 			}
-			Positions newPositions = new Positions(motorbike.x, motorbike.y);
-			for (int i =0; i < AllPlayers.size(); i++){
-				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
-				if(findPositions(newPositions,OldPlayersPositions) ){
+			for(int i =0; i<SPEED; i++){
+			Positions newPositions = new Positions(motorbike.x, motorbike.y-1);
+			if( findPositions(newPositions, OnlyMyPositions) || findPositions(newPositions, OponentPositions) ){
 					
-					JOptionPane.showMessageDialog(new JFrame(), Score, "Uscita", JOptionPane.INFORMATION_MESSAGE);
-					clearPositions(g,OnlyMyPositions);
-					System.exit(0);
-				} 
+				started = false;
+				clearPositions(g,OnlyMyPositions);
+				JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "+Score, "Hai Perso", JOptionPane.INFORMATION_MESSAGE);
+					//System.exit(0);
+			} 
 			}
+			
 			
 			
 			
 		}
 		else if (this.currentDirection.equals("S")) {
 			for(int i =0; i<SPEED; i++){
-				
+				System.out.println("Coordinate Mie Sud "+motorbike.x+" , "+motorbike.y);
+
 				g.fillRect(motorbike.x, motorbike.y+1, motorbike.width, motorbike.height);
 			}
 			
-			Positions newPositions = new Positions(motorbike.x, motorbike.y);
-			for (int i =0; i < AllPlayers.size(); i++){
-				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
-				if(findPositions(newPositions,OldPlayersPositions) ){
+			for(int i =0; i<SPEED; i++){
+			Positions newPositions = new Positions(motorbike.x, motorbike.y+1);
+				if( findPositions(newPositions, OnlyMyPositions) || findPositions(newPositions, OponentPositions)){
 					
-					JOptionPane.showMessageDialog(new JFrame(), Score, "Uscita", JOptionPane.INFORMATION_MESSAGE);
+					started = false;
 					clearPositions(g,OnlyMyPositions);
-					System.exit(0);
+					JOptionPane.showMessageDialog(new JFrame(),"Punteggio : "+Score, "Hai Perso", JOptionPane.INFORMATION_MESSAGE);
+					//System.exit(0);
 				} 
 			}
+			
 		}
 		else if (this.currentDirection.equals("W")) {
 			for(int i =0; i<SPEED; i++){
-				
-				g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height);
+				System.out.println("Coordinate Mie Ovest "+motorbike.x+" , "+motorbike.y);
+
+				g.fillRect(motorbike.x-1, motorbike.y, motorbike.width, motorbike.height);
 			}
-			Positions newPositions = new Positions(motorbike.x, motorbike.y);
-			for (int i =0; i < AllPlayers.size(); i++){
-				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
-				if(findPositions(newPositions,OldPlayersPositions) ){
+			for(int i =0; i<SPEED; i++){
+			Positions newPositions = new Positions(motorbike.x-1, motorbike.y);
+				if( findPositions(newPositions, OnlyMyPositions) || findPositions(newPositions, OponentPositions)){
 					
-					JOptionPane.showMessageDialog(new JFrame(), Score, "Uscita", JOptionPane.INFORMATION_MESSAGE);
+					started = false;
 					clearPositions(g,OnlyMyPositions);
-					System.exit(0);
+					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "+Score, "Hai Perso", JOptionPane.INFORMATION_MESSAGE);
+					//System.exit(0);
 				} 
 			}
+			
 			
 			
 		}
 		else if (this.currentDirection.equals("E")) {
 			for(int i =0; i<SPEED; i++){
-				
+				System.out.println("Coordinate Mie East "+motorbike.x+" , "+motorbike.y);
+
 				g.fillRect(motorbike.x+1, motorbike.y, motorbike.width, motorbike.height);
 			}
-			Positions newPositions = new Positions(motorbike.x, motorbike.y);
-			for (int i =0; i < AllPlayers.size(); i++){
-				ArrayList<Positions> OldPlayersPositions = AllPlayers.get(i).getCoordinatesPlayer();
-				if(findPositions(newPositions,OldPlayersPositions) ){
+			for(int i =0; i<SPEED; i++){
+			Positions newPositions = new Positions(motorbike.x+1, motorbike.y);
+				if( findPositions(newPositions, OnlyMyPositions) || findPositions(newPositions, OponentPositions) ){
 					
-					
-					JOptionPane.showMessageDialog(new JFrame(), "Hai Perso", "Uscita", JOptionPane.INFORMATION_MESSAGE);
+					started = false;
 					clearPositions(g,OnlyMyPositions);
-					System.exit(0);
+					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "+Score, "Hai Perso", JOptionPane.INFORMATION_MESSAGE);
+					//System.exit(0);
 				} 
 			}
+			
 		}
 		
-		MyOldestPositions.add(CurrentPositions);
+//		MyOldestPositions.add(CurrentPositions);
+		System.out.println("Coordinate Mie Finali "+motorbike.x+" , "+motorbike.y);
+
 		OnlyMyPositions.add(CurrentPositions);
-		Player p = Controller.getInstance().getMyPlayer();
-		p.getCoordinatesPlayer().add(new Positions(motorbike.x,motorbike.y));
+//		Player p = Controller.getInstance().getMyPlayer();
+//		p.getCoordinatesPlayer().add(new Positions(motorbike.x,motorbike.y));
 
 	}
 	
@@ -271,9 +291,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	
 	/**
 	 *  Metodo di repaint del JPanel, aggiorna il movimento della moto.
+	 * @throws ParseException 
 	 */
-	public void repaint()
-	{
+	public void repaint() {
 		
 		Graphics g = this.panel.getGraphics();
 		g.setColor(Controller.getInstance().getMyPlayer().getColor());
@@ -294,11 +314,14 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 		}
 		else {
 			g.setColor(Controller.getInstance().getMyPlayer().getColor());
-			g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height);
 			g.setColor(Color.red);
 			g.setFont(new Font("Arial", 1, 20));
-			g.drawString("KEY UP TO START!", 15, HEIGHT / 10);
-;
+			g.drawString("Hai Perso", WIDTH / 10, HEIGHT / 10);
+				
+//			if(NumPlayer <= 0){
+//					WindowUtility.closeWindow(jframe);
+//					
+//			}
 			
 		}
 	}
@@ -309,22 +332,32 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 	 */
 	public void repaint(Rectangle motorbike, Color c)
 	{
-		System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][REPAINT DEBUG]");
+		//System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][REPAINT DEBUG]");
 		Graphics g = this.panel.getGraphics();
 		g.setColor(c);
-		Positions pos = new Positions(motorbike.x, motorbike.y);
 		
-		for(int i = 0; i < AllPlayers.size(); i++){
-			ArrayList<Positions> myPositions = AllPlayers.get(i).getCoordinatesPlayer();
-			if (findPositions(pos, myPositions)) {
-				clearPositions(g, myPositions);		
-			}
-		}
 		
+//		for(int i = 0; i < AllPlayers.size(); i++){
+//			ArrayList<Positions> myPositions = AllPlayers.get(i).getCoordinatesPlayer();
+////			if (findPositions(pos, myPositions) || findPositions(pos,OponentPositions)) {
+//			
+//		}
+		
+//		if ( findPositions(pos,OnlyMyPositions)) {
+////			clearPositions(g, OponentPositions);
+//			started = false;
+//			clearPositions(g,OnlyMyPositions);
+//			JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "+Score, "Hai Perso", JOptionPane.INFORMATION_MESSAGE);
+//			
+//		}
 		
 		g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height);
-		Player p = Controller.getInstance().getPlayerByColor(c);
-		p.getCoordinatesPlayer().add(new Positions(motorbike.x,motorbike.y));
+//		Player p = Controller.getInstance().getPlayerByColor(c);
+//		p.getCoordinatesPlayer().add(new Positions(motorbike.x,motorbike.y));
+		//in questo array ci tengo le posizioni di tutti i miei avversari
+		Positions pos = new Positions(motorbike.x, motorbike.y);
+		OponentPositions.add(pos);
+		System.out.println("Coordinate Ospiti"+motorbike.x+" , "+motorbike.y);
 		
 		
 	}
@@ -351,8 +384,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener
 			int a=p.getX();
 			int b = p.getY();
 			g.fillRect(a, b, motorbike.width, motorbike.height);
+			
 		}
-		
+		NumPlayer--;	
 		
 	}
 	
