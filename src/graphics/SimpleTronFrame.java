@@ -37,7 +37,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	/** UPDATE DELLA FINESTRA */
 	public final int TIMER_UPDATE = 20;
 	/** VELOCITA DELLA MOTO */
-	public final int SPEED = 3;
+	public final int SPEED = 2;
 	/** PANNELLO DI DISEGNO */
 	public JPanel panel;
 	/** RETTANGOLO CHE RAPPRESENTA LA MOTO */
@@ -193,15 +193,13 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 		// altrimenti vuol dire che sono all'interno del riquadro giusto e posso
 		// continuare a giocare
 		if (this.currentDirection.equals("N")) {
-			for (int i = 0; i < SPEED; i++) {
 				// System.out.println("Coordinate Mie Nord "+motorbike.x+" , "+motorbike.y+"-1");
 
-				g.fillRect(motorbike.x, motorbike.y - i, motorbike.width,
+				g.fillRect(motorbike.x, motorbike.y , motorbike.width,
 						motorbike.height);
 
-			}
-			for (int i = 0; i < SPEED; i++) {
-				Positions newPositions = new Positions(motorbike.x, motorbike.y - i);
+			
+				Positions newPositions = new Positions(motorbike.x, motorbike.y );
 				for (int j = 0; j < AllPlayers.size(); j++) {
 
 					System.out.println("Ciclo i player");
@@ -221,18 +219,13 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 					}
 				}
 				
-			}
-
 		} else if (this.currentDirection.equals("S")) {
-			for (int i = 0; i < SPEED; i++) {
 				// System.out.println("Coordinate Mie Sud "+motorbike.x+" , "+motorbike.y+i);
 
-				g.fillRect(motorbike.x, motorbike.y + i, motorbike.width,
+				g.fillRect(motorbike.x, motorbike.y , motorbike.width,
 						motorbike.height);
-			}
 
-			for (int i = 0; i < SPEED; i++) {
-				Positions newPositions = new Positions(motorbike.x, motorbike.y + i);
+				Positions newPositions = new Positions(motorbike.x, motorbike.y );
 				for (int j = 0; j < AllPlayers.size(); j++) {
 
 					System.out.println("Ciclo i player");
@@ -250,17 +243,13 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 						// System.exit(0);
 
 					}
-				}
 				
 			}
 
 		} else if (this.currentDirection.equals("W")) {
-			for (int i = 0; i < SPEED; i++) {
 
-				g.fillRect(motorbike.x - i, motorbike.y, motorbike.width,
+				g.fillRect(motorbike.x , motorbike.y, motorbike.width,
 						motorbike.height);
-			}
-			for (int i = 0; i < SPEED; i++) {
 				Positions newPositions = new Positions(motorbike.x-i, motorbike.y );
 				for (int j = 0; j < AllPlayers.size(); j++) {
 
@@ -281,16 +270,12 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 					}
 				}
 				
-			}
 
 		} else if (this.currentDirection.equals("E")) {
-			for (int i = 0; i < SPEED; i++) {
 
 				g.fillRect(motorbike.x + i, motorbike.y, motorbike.width,
 						motorbike.height);
-			}
-			for (int i = 0; i < SPEED; i++) {
-				Positions newPositions = new Positions(motorbike.x +i, motorbike.y );
+				Positions newPositions = new Positions(motorbike.x , motorbike.y );
 				for (int j = 0; j < AllPlayers.size(); j++) {
 
 					System.out.println("Ciclo i player");
@@ -309,8 +294,6 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 
 					}
 				}
-				
-			}
 
 		}
 
