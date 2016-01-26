@@ -422,15 +422,21 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 			ArrayList<Positions> positions) {
 		boolean find = false;
 		if (!positions.isEmpty()) {
-			for (Positions p : positions) {
-				if (p.getX() == currentPositions.getX()
-						&& p.getY() == currentPositions.getY()) {
-					// System.out.println(currentPositions.getX()+","+currentPositions.getY());
-					// System.out.println(p.getX()+","+p.getY());
-					find = true;
-					break;
+			try {
+				for (Positions p : positions) {
+					if (p.getX() == currentPositions.getX()
+							&& p.getY() == currentPositions.getY()) {
+						// System.out.println(currentPositions.getX()+","+currentPositions.getY());
+						// System.out.println(p.getX()+","+p.getY());
+						find = true;
+						break;
+					}
 				}
+			} catch (Exception e) {
+				// TODO: handle exception
+				return find;
 			}
+			
 
 		}
 
