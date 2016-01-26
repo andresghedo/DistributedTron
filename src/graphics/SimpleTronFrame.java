@@ -35,7 +35,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	/** GRANDEZZA QUADRATO DELLA MOTO */
 	public final int SIZE_MOTO = 3;
 	/** UPDATE DELLA FINESTRA */
-	public final int TIMER_UPDATE = 20;
+	public final int TIMER_UPDATE = 15;
 	/** VELOCITA DELLA MOTO */
 	public final int SPEED = 2;
 	/** PANNELLO DI DISEGNO */
@@ -185,6 +185,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 			started = false;
 
 			clearPositions(g, OnlyMyPositions);
+			WindowUtility.closeWindow(jframe);
 			JOptionPane.showMessageDialog(new JFrame(), "Punteggio : " + Score,
 					"Hai Perso", JOptionPane.INFORMATION_MESSAGE);
 			// System.exit(0);
@@ -193,107 +194,117 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 		// altrimenti vuol dire che sono all'interno del riquadro giusto e posso
 		// continuare a giocare
 		if (this.currentDirection.equals("N")) {
-				// System.out.println("Coordinate Mie Nord "+motorbike.x+" , "+motorbike.y+"-1");
+			// System.out.println("Coordinate Mie Nord "+motorbike.x+" , "+motorbike.y+"-1");
 
-				g.fillRect(motorbike.x, motorbike.y , motorbike.width,
-						motorbike.height);
+			g.fillRect(motorbike.x, motorbike.y, motorbike.width,
+					motorbike.height);
 
-			
-				Positions newPositions = new Positions(motorbike.x, motorbike.y );
-				for (int j = 0; j < AllPlayers.size(); j++) {
+			Positions newPositions = new Positions(motorbike.x, motorbike.y);
+			for (int j = 0; j < AllPlayers.size(); j++) {
 
-					System.out.println("Ciclo i player");
-					ArrayList<Positions> myPositions = AllPlayers.get(j).getCoordinatesPlayer();
-					if (findPositions(newPositions, myPositions) || findPositions(newPositions,OnlyMyPositions)) {
-						System.out.println("Un Player ha perso");
-						clearPositions(g, OnlyMyPositions);
-//						player.getCoordinatesPlayer().clear();
-//						Controller.getInstance().getRoom().removePlayer(player);
-						started = false;
-						clearPositions(g, OnlyMyPositions);
-						JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-								+ Score, "Hai Perso",
-								JOptionPane.INFORMATION_MESSAGE);
-						// System.exit(0);
+				System.out.println("Ciclo i player");
+				ArrayList<Positions> myPositions = AllPlayers.get(j)
+						.getCoordinatesPlayer();
+				if (findPositions(newPositions, myPositions)
+						|| findPositions(newPositions, OnlyMyPositions)) {
+					System.out.println("Un Player ha perso");
+					clearPositions(g, OnlyMyPositions);
+					// player.getCoordinatesPlayer().clear();
+					// Controller.getInstance().getRoom().removePlayer(player);
+					started = false;
+					clearPositions(g, OnlyMyPositions);
+					WindowUtility.closeWindow(jframe);
+					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
+							+ Score, "Hai Perso",
+							JOptionPane.INFORMATION_MESSAGE);
+					// System.exit(0);
 
-					}
 				}
-				
+			}
+
 		} else if (this.currentDirection.equals("S")) {
-				// System.out.println("Coordinate Mie Sud "+motorbike.x+" , "+motorbike.y+i);
+			// System.out.println("Coordinate Mie Sud "+motorbike.x+" , "+motorbike.y+i);
 
-				g.fillRect(motorbike.x, motorbike.y , motorbike.width,
-						motorbike.height);
+			g.fillRect(motorbike.x, motorbike.y, motorbike.width,
+					motorbike.height);
 
-				Positions newPositions = new Positions(motorbike.x, motorbike.y );
-				for (int j = 0; j < AllPlayers.size(); j++) {
+			Positions newPositions = new Positions(motorbike.x, motorbike.y);
+			for (int j = 0; j < AllPlayers.size(); j++) {
 
-					System.out.println("Ciclo i player");
-					ArrayList<Positions> myPositions = AllPlayers.get(j).getCoordinatesPlayer();
-					if (findPositions(newPositions, myPositions) || findPositions(newPositions,OnlyMyPositions)) {
-						System.out.println("Un Player ha perso");
-						clearPositions(g, OnlyMyPositions);
-//						player.getCoordinatesPlayer().clear();
-//						Controller.getInstance().getRoom().removePlayer(player);
-						started = false;
-						clearPositions(g, OnlyMyPositions);
-						JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-								+ Score, "Hai Perso",
-								JOptionPane.INFORMATION_MESSAGE);
-						// System.exit(0);
+				System.out.println("Ciclo i player");
+				ArrayList<Positions> myPositions = AllPlayers.get(j)
+						.getCoordinatesPlayer();
+				if (findPositions(newPositions, myPositions)
+						|| findPositions(newPositions, OnlyMyPositions)) {
+					System.out.println("Un Player ha perso");
+					clearPositions(g, OnlyMyPositions);
+					// player.getCoordinatesPlayer().clear();
+					// Controller.getInstance().getRoom().removePlayer(player);
+					started = false;
+					clearPositions(g, OnlyMyPositions);
+					WindowUtility.closeWindow(jframe);
+					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
+							+ Score, "Hai Perso",
+							JOptionPane.INFORMATION_MESSAGE);
+					// System.exit(0);
 
-					}
-				
+				}
+
 			}
 
 		} else if (this.currentDirection.equals("W")) {
 
-				g.fillRect(motorbike.x , motorbike.y, motorbike.width,
-						motorbike.height);
-				Positions newPositions = new Positions(motorbike.x-i, motorbike.y );
-				for (int j = 0; j < AllPlayers.size(); j++) {
+			g.fillRect(motorbike.x, motorbike.y, motorbike.width,
+					motorbike.height);
+			Positions newPositions = new Positions(motorbike.x, motorbike.y);
+			for (int j = 0; j < AllPlayers.size(); j++) {
 
-					System.out.println("Ciclo i player");
-					ArrayList<Positions> myPositions = AllPlayers.get(j).getCoordinatesPlayer();
-					if (findPositions(newPositions, myPositions) || findPositions(newPositions,OnlyMyPositions)) {
-						System.out.println("Un Player ha perso");
-						clearPositions(g, OnlyMyPositions);
-//						player.getCoordinatesPlayer().clear();
-//						Controller.getInstance().getRoom().removePlayer(player);
-						started = false;
-						clearPositions(g, OnlyMyPositions);
-						JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-								+ Score, "Hai Perso",
-								JOptionPane.INFORMATION_MESSAGE);
-						// System.exit(0);
+				System.out.println("Ciclo i player");
+				ArrayList<Positions> myPositions = AllPlayers.get(j)
+						.getCoordinatesPlayer();
+				if (findPositions(newPositions, myPositions)
+						|| findPositions(newPositions, OnlyMyPositions)) {
+					System.out.println("Un Player ha perso");
+					clearPositions(g, OnlyMyPositions);
+					// player.getCoordinatesPlayer().clear();
+					// Controller.getInstance().getRoom().removePlayer(player);
+					started = false;
+					clearPositions(g, OnlyMyPositions);
+					WindowUtility.closeWindow(jframe);
+					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
+							+ Score, "Hai Perso",
+							JOptionPane.INFORMATION_MESSAGE);
+					// System.exit(0);
 
-					}
 				}
-				
+			}
 
 		} else if (this.currentDirection.equals("E")) {
 
-				g.fillRect(motorbike.x + i, motorbike.y, motorbike.width,
-						motorbike.height);
-				Positions newPositions = new Positions(motorbike.x , motorbike.y );
-				for (int j = 0; j < AllPlayers.size(); j++) {
+			g.fillRect(motorbike.x, motorbike.y, motorbike.width,
+					motorbike.height);
+			Positions newPositions = new Positions(motorbike.x, motorbike.y);
+			for (int j = 0; j < AllPlayers.size(); j++) {
 
-					System.out.println("Ciclo i player");
-					ArrayList<Positions> myPositions = AllPlayers.get(j).getCoordinatesPlayer();
-					if (findPositions(newPositions, myPositions) || findPositions(newPositions,OnlyMyPositions)) {
-						System.out.println("Un Player ha perso");
-						clearPositions(g, OnlyMyPositions);
-//						player.getCoordinatesPlayer().clear();
-//						Controller.getInstance().getRoom().removePlayer(player);
-						started = false;
-						clearPositions(g, OnlyMyPositions);
-						JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-								+ Score, "Hai Perso",
-								JOptionPane.INFORMATION_MESSAGE);
-						// System.exit(0);
+				System.out.println("Ciclo i player");
+				ArrayList<Positions> myPositions = AllPlayers.get(j)
+						.getCoordinatesPlayer();
+				if (findPositions(newPositions, myPositions)
+						|| findPositions(newPositions, OnlyMyPositions)) {
+					System.out.println("Un Player ha perso");
+					clearPositions(g, OnlyMyPositions);
+					// player.getCoordinatesPlayer().clear();
+					// Controller.getInstance().getRoom().removePlayer(player);
+					started = false;
+					clearPositions(g, OnlyMyPositions);
+					WindowUtility.closeWindow(jframe);
+					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
+							+ Score, "Hai Perso",
+							JOptionPane.INFORMATION_MESSAGE);
+					// System.exit(0);
 
-					}
 				}
+			}
 
 		}
 
@@ -350,11 +361,14 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 			g.setColor(Color.red);
 			g.setFont(new Font("Arial", 1, 20));
 			g.drawString("Hai Perso", WIDTH / 10, HEIGHT / 10);
-
-			// if(NumPlayer <= 0){
-			// WindowUtility.closeWindow(jframe);
-			//
-			// }
+			
+			 if(NumPlayer <= 1){
+			 WindowUtility.closeWindow(jframe);
+			 JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
+						+ Score, "Hai Vinto",
+						JOptionPane.INFORMATION_MESSAGE);
+			
+			 }
 
 		}
 	}
@@ -374,16 +388,16 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 		Player player = Controller.getInstance().getPlayerByColor(c);
 
 		g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height);
-		
+
 		if (player != null) {
 			// if (!mycolor.equals(c)) {
 			System.out.println("Player diverso dal null");
 			for (int i = 0; i < AllPlayers.size(); i++) {
-
-				System.out.println("Ciclo i player");
+//				System.out.println("Ciclo i player");
 				ArrayList<Positions> myPositions = AllPlayers.get(i)
 						.getCoordinatesPlayer();
-				if (findPositions(pos, myPositions) || findPositions(pos,OnlyMyPositions)) {
+				if (findPositions(pos, myPositions)
+						|| findPositions(pos, OnlyMyPositions)) {
 					System.out.println("Un Player ha perso");
 					clearPositions(g, player.getCoordinatesPlayer());
 					player.getCoordinatesPlayer().clear();
@@ -392,7 +406,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 				}
 			}
 		}
-		
+
 		// Player p = Controller.getInstance().getPlayerByColor(c);
 		// p.getCoordinatesPlayer().add(new Positions(motorbike.x,motorbike.y));
 		// in questo array ci tengo le posizioni di tutti i miei avversari
@@ -407,15 +421,19 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	private boolean findPositions(Positions currentPositions,
 			ArrayList<Positions> positions) {
 		boolean find = false;
-		for (Positions p : positions) {
-			if (p.getX() == currentPositions.getX()
-					&& p.getY() == currentPositions.getY()) {
-				// System.out.println(currentPositions.getX()+","+currentPositions.getY());
-				// System.out.println(p.getX()+","+p.getY());
-				find = true;
-				break;
+		if (!positions.isEmpty()) {
+			for (Positions p : positions) {
+				if (p.getX() == currentPositions.getX()
+						&& p.getY() == currentPositions.getY()) {
+					// System.out.println(currentPositions.getX()+","+currentPositions.getY());
+					// System.out.println(p.getX()+","+p.getY());
+					find = true;
+					break;
+				}
 			}
+
 		}
+
 		return find;
 
 	}
