@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import javax.sql.rowset.spi.SyncResolver;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -107,7 +108,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	 * muoverla verso la direzione corrente.
 	 */
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public  void actionPerformed(ActionEvent e) {
 		// System.out.println("[" + Calendar.getInstance().getTimeInMillis() +
 		// "][ACTION PERFORMED]");
 
@@ -150,7 +151,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	 * Metodo che muove la moto nella direzione corrente di quanto richiede la
 	 * velocità (SPEED).
 	 */
-	public void moveMoto() {
+	public synchronized void moveMoto() {
 
 		if (this.currentDirection.equals("N")) {
 			motorbike.y -= this.SPEED;
@@ -168,7 +169,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	 * Metodo che disegna graficamente la moto sul JPanel e controlla di non
 	 * andare a sbattere sulla propria scia
 	 */
-	public void drawMoto(Graphics g) {
+	public synchronized void drawMoto(Graphics g) {
 		Score++;
 		// // String visualPunteggio = Integer.toString(Score);
 		// // TODO
@@ -186,8 +187,8 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 
 			clearPositions(g, OnlyMyPositions);
 			WindowUtility.closeWindow(jframe);
-			JOptionPane.showMessageDialog(new JFrame(), "Punteggio : " + Score,
-					"Hai Perso", JOptionPane.INFORMATION_MESSAGE);
+//			JOptionPane.showMessageDialog(new JFrame(), "Punteggio : " + Score,
+//					"Hai Perso", JOptionPane.INFORMATION_MESSAGE);
 			// System.exit(0);
 		}
 
@@ -214,9 +215,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 					started = false;
 					clearPositions(g, OnlyMyPositions);
 					WindowUtility.closeWindow(jframe);
-					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-							+ Score, "Hai Perso",
-							JOptionPane.INFORMATION_MESSAGE);
+//					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
+//							+ Score, "Hai Perso",
+//							JOptionPane.INFORMATION_MESSAGE);
 					// System.exit(0);
 
 				}
@@ -243,9 +244,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 					started = false;
 					clearPositions(g, OnlyMyPositions);
 					WindowUtility.closeWindow(jframe);
-					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-							+ Score, "Hai Perso",
-							JOptionPane.INFORMATION_MESSAGE);
+//					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
+//							+ Score, "Hai Perso",
+//							JOptionPane.INFORMATION_MESSAGE);
 					// System.exit(0);
 
 				}
@@ -271,9 +272,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 					started = false;
 					clearPositions(g, OnlyMyPositions);
 					WindowUtility.closeWindow(jframe);
-					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-							+ Score, "Hai Perso",
-							JOptionPane.INFORMATION_MESSAGE);
+//					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
+//							+ Score, "Hai Perso",
+//							JOptionPane.INFORMATION_MESSAGE);
 					// System.exit(0);
 
 				}
@@ -298,9 +299,9 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 					started = false;
 					clearPositions(g, OnlyMyPositions);
 					WindowUtility.closeWindow(jframe);
-					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-							+ Score, "Hai Perso",
-							JOptionPane.INFORMATION_MESSAGE);
+//					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
+//							+ Score, "Hai Perso",
+//							JOptionPane.INFORMATION_MESSAGE);
 					// System.exit(0);
 
 				}
@@ -319,7 +320,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	/**
 	 * Metodo che decreta l'inizio del gioco.
 	 */
-	public void startGame(Timer t) {
+	public synchronized void startGame(Timer t) {
 		if (!started) {
 			// t.setInitialDelay(1000); // messo un delay iniziale per evitare
 			// che qualche nodo non abbia istanziato il frame
@@ -338,7 +339,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	/**
 	 * Metodo di repaint del JPanel, aggiorna il movimento della moto.
 	 */
-	public void repaint() {
+	public synchronized void repaint() {
 
 		Graphics g = this.panel.getGraphics();
 		g.setColor(Controller.getInstance().getMyPlayer().getColor());
@@ -377,7 +378,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	 * Metodo che disegna una moto di un colore c, passati come parametri. Viene
 	 * utilizzato all'arrivo di messaggi esterni per disegnare moto avversarie.
 	 */
-	public void repaint(Rectangle motorbike, Color c) {
+	public synchronized void repaint(Rectangle motorbike, Color c) {
 		// System.out.println("[" + Calendar.getInstance().getTimeInMillis() +
 		// "][REPAINT DEBUG]");
 		Graphics g = this.panel.getGraphics();
@@ -418,7 +419,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	}
 
 	// Controlla che le attuali coordinate di tron siano inesplorate
-	private boolean findPositions(Positions currentPositions,
+	private synchronized boolean findPositions(Positions currentPositions,
 			ArrayList<Positions> positions) {
 		boolean find = false;
 		if (!positions.isEmpty()) {
@@ -445,7 +446,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	}
 
 	// elimina le coordinate dei giocatori che perdono
-	public void clearPositions(Graphics g, ArrayList<Positions> positions) {
+	public synchronized void clearPositions(Graphics g, ArrayList<Positions> positions) {
 		g.setColor(Color.black);
 		for (Positions p : positions) {
 			int a = p.getX();

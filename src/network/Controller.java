@@ -77,7 +77,7 @@ public class Controller {
 	/**
 	 * Cerco nella Room l'host che mi rappresenta e ne prelevo il colore e lo setto. 
 	 */
-	public void setMyColor() {
+	public synchronized void setMyColor() {
 		ArrayList<Player> p = this.room.getPlayers();
 		for (int i=0; i<p.size();i++) {
 			if(p.get(i).getHost().getUUID().equals(this.player.getHost().getUUID()))

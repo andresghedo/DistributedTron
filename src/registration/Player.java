@@ -43,11 +43,11 @@ public class Player implements Serializable {
 		this.username = u;
 	}
 	
-	public Color getColor() {
+	public synchronized Color getColor() {
 		return this.color;
 	}
 	
-	public void setColor(Color c) {
+	public synchronized void setColor(Color c) {
 		this.color = c;
 	}
 	

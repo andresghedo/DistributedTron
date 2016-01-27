@@ -7,6 +7,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import javax.sql.rowset.spi.SyncResolver;
+
 import network.Controller;
 import network.RmiMessage;
 
@@ -34,7 +36,7 @@ public class RmiServerRegistration extends UnicastRemoteObject implements Interf
 	 * pacchetto nell'anello con la configurazione dello stesso, in modo che ogni nodo riesca 
 	 * a settarsela personalmente.
 	 */
-	public void addPlayer(Player p) throws InterruptedException, ServerNotActiveException {
+	public synchronized void addPlayer(Player p) throws InterruptedException, ServerNotActiveException {
 		System.out.println("[REGISTRATION SERVICE] AGGIUNTO HOST IP: "+p.getHost().getIP()+"  e PORT:"+p.getHost().getPort());
 		p.setColor(this.colors.remove(0));
 		p.setStartXPos(this.startXGui);

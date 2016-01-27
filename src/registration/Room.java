@@ -62,7 +62,7 @@ public class Room implements Serializable{
 	/** Ritorna l'Host successivo, nella configurazione dell'anello unidirezionale,
 	 *  all'host dato come parametro.
 	 */
-	public Player getNext(Player p) {
+	public  Player getNext(Player p) {
 		for (int i = 0; i < this.players.size(); i++) {
 			Player current = this.players.get(i);
 			if((current.getHost().getIP().equals(p.getHost().getIP())) && (current.getHost().getPort() == p.getHost().getPort()) && (current.getHost().getUUID().equals(p.getHost().getUUID()))) {
