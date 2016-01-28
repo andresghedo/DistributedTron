@@ -36,7 +36,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	/** GRANDEZZA QUADRATO DELLA MOTO */
 	public final int SIZE_MOTO = 3;
 	/** UPDATE DELLA FINESTRA */
-	public final int TIMER_UPDATE = 15;
+	public final int TIMER_UPDATE = 20;
 	/** VELOCITA DELLA MOTO */
 	public final int SPEED = 2;
 	/** PANNELLO DI DISEGNO */
@@ -63,12 +63,13 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 
 	private int NumPlayer = 0;
 
-	JFrame jframe;
+	private JFrame jframe;
 
 	private ArrayList<Positions> OponentPositions = new ArrayList<Positions>();
 
 	private ArrayList<Positions> OnlyMyPositions = new ArrayList<Positions>();
 
+	private Graphics g;
 	/**
 	 * COSTRUTTORE DI CLASSE setta il JFrame ed il Jpanel per la grafica e fa
 	 * partire il gioco, ovvero il timer per l'update della grafica e dei
@@ -114,29 +115,31 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 
 		String uuid = Controller.getInstance().getMyHost().getUUID();
 		RmiMessage m = new RmiMessage(motorbike, uuid);
+		
 
 		try {
 			Controller.getInstance().getCommunication().getNextHostInterface()
 					.send(m);
+//			System.out.println("Fin Qui TUTTO BENE");
 		} catch (RemoteException e1) {
-			// System.out.println("[" + Calendar.getInstance().getTimeInMillis()
-			// +
-			// "]########### REMOTE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+			 System.out.println("[" + Calendar.getInstance().getTimeInMillis()
+			 +
+			 "]########### REMOTE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 		} catch (NotBoundException e1) {
-			// System.out.println("[" + Calendar.getInstance().getTimeInMillis()
-			// +
-			// "]########### NOTBOUND EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+			 System.out.println("[" + Calendar.getInstance().getTimeInMillis()
+			 +
+			 "]########### NOTBOUND EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 		} catch (ServerNotActiveException e1) {
-			// System.out.println("[" + Calendar.getInstance().getTimeInMillis()
-			// +
-			// "]########### SERVERNOTACTIVE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+			 System.out.println("[" + Calendar.getInstance().getTimeInMillis()
+			 +
+			 "]########### SERVERNOTACTIVE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 		} catch (NullPointerException e1) { // return perchè nessuno parte
 											// quando tutti non sono pronti ad
 											// implementare la grafica
-			// e1.printStackTrace();
-			// System.out.println("[" + Calendar.getInstance().getTimeInMillis()
-			// +
-			// "]########### NULLPOINTER EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+			 e1.printStackTrace();
+			 System.out.println("[" + Calendar.getInstance().getTimeInMillis()
+			 +
+			 "]########### NULLPOINTER EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 			return;
 		}
 
@@ -169,15 +172,15 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	 * Metodo che disegna graficamente la moto sul JPanel e controlla di non
 	 * andare a sbattere sulla propria scia
 	 */
-	public synchronized void drawMoto(Graphics g) {
+	public synchronized void drawMoto() {
 		Score++;
 		// // String visualPunteggio = Integer.toString(Score);
 		// // TODO
 		// g.drawString(" : "+Integer.toString(Score),
 		// (WIDTH/2)+MyName.length(), 15);
 		Positions CurrentPositions = new Positions(motorbike.x, motorbike.y);
-		System.out.println("Coordinate Mie Iniziali " + motorbike.x + " , "
-				+ motorbike.y);
+//		System.out.println("Coordinate Mie Iniziali " + motorbike.x + " , "
+//				+ motorbike.y);
 
 		// Se esco fuori dai bordi ho perso
 		if (motorbike.x < (0 + NumLines) || motorbike.x > (WIDTH - NumLines)
@@ -189,7 +192,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 			WindowUtility.closeWindow(jframe);
 //			JOptionPane.showMessageDialog(new JFrame(), "Punteggio : " + Score,
 //					"Hai Perso", JOptionPane.INFORMATION_MESSAGE);
-			// System.exit(0);
+//			 System.exit(0);
 		}
 
 		// altrimenti vuol dire che sono all'interno del riquadro giusto e posso
@@ -203,7 +206,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
 			for (int j = 0; j < AllPlayers.size(); j++) {
 
-				System.out.println("Ciclo i player");
+//				System.out.println("Ciclo i player");
 				ArrayList<Positions> myPositions = AllPlayers.get(j)
 						.getCoordinatesPlayer();
 				if (findPositions(newPositions, myPositions)
@@ -218,7 +221,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 //					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
 //							+ Score, "Hai Perso",
 //							JOptionPane.INFORMATION_MESSAGE);
-					// System.exit(0);
+//					 System.exit(0);
 
 				}
 			}
@@ -232,7 +235,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
 			for (int j = 0; j < AllPlayers.size(); j++) {
 
-				System.out.println("Ciclo i player");
+//				System.out.println("Ciclo i player");
 				ArrayList<Positions> myPositions = AllPlayers.get(j)
 						.getCoordinatesPlayer();
 				if (findPositions(newPositions, myPositions)
@@ -247,7 +250,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 //					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
 //							+ Score, "Hai Perso",
 //							JOptionPane.INFORMATION_MESSAGE);
-					// System.exit(0);
+//					 System.exit(0);
 
 				}
 
@@ -260,7 +263,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
 			for (int j = 0; j < AllPlayers.size(); j++) {
 
-				System.out.println("Ciclo i player");
+//				System.out.println("Ciclo i player");
 				ArrayList<Positions> myPositions = AllPlayers.get(j)
 						.getCoordinatesPlayer();
 				if (findPositions(newPositions, myPositions)
@@ -275,7 +278,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 //					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
 //							+ Score, "Hai Perso",
 //							JOptionPane.INFORMATION_MESSAGE);
-					// System.exit(0);
+//					 System.exit(0);
 
 				}
 			}
@@ -287,7 +290,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 			Positions newPositions = new Positions(motorbike.x, motorbike.y);
 			for (int j = 0; j < AllPlayers.size(); j++) {
 
-				System.out.println("Ciclo i player");
+//				System.out.println("Ciclo i player");
 				ArrayList<Positions> myPositions = AllPlayers.get(j)
 						.getCoordinatesPlayer();
 				if (findPositions(newPositions, myPositions)
@@ -302,7 +305,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 //					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
 //							+ Score, "Hai Perso",
 //							JOptionPane.INFORMATION_MESSAGE);
-					// System.exit(0);
+//					 System.exit(0);
 
 				}
 			}
@@ -341,8 +344,14 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	 */
 	public synchronized void repaint() {
 
-		Graphics g = this.panel.getGraphics();
-		g.setColor(Controller.getInstance().getMyPlayer().getColor());
+		g = this.panel.getGraphics();
+		
+		try {
+			g.setColor(Controller.getInstance().getMyPlayer().getColor());
+		} catch (Exception e) {
+			System.exit(0);
+		}
+		
 		// scrivo il mio nome a video
 		g.drawString(MyName, WIDTH / 2, 15);
 
@@ -356,7 +365,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 
 		if (started) {
 
-			this.drawMoto(g);
+			this.drawMoto();
 		} else {
 			g.setColor(Controller.getInstance().getMyPlayer().getColor());
 			g.setColor(Color.red);
@@ -381,8 +390,13 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	public synchronized void repaint(Rectangle motorbike, Color c) {
 		// System.out.println("[" + Calendar.getInstance().getTimeInMillis() +
 		// "][REPAINT DEBUG]");
-		Graphics g = this.panel.getGraphics();
-		g.setColor(c);
+		g = this.panel.getGraphics();
+		try {
+			g.setColor(c);
+		} catch (Exception e) {
+			System.exit(0);
+		}
+		
 		// il mio colore
 		Color mycolor = Controller.getInstance().getMyPlayer().getColor();
 		Positions pos = new Positions(motorbike.x, motorbike.y);
@@ -392,7 +406,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 
 		if (player != null) {
 			// if (!mycolor.equals(c)) {
-			System.out.println("Player diverso dal null");
+//			System.out.println("Player diverso dal null");
 			for (int i = 0; i < AllPlayers.size(); i++) {
 //				System.out.println("Ciclo i player");
 				ArrayList<Positions> myPositions = AllPlayers.get(i)
@@ -402,7 +416,7 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 					System.out.println("Un Player ha perso");
 					clearPositions(g, player.getCoordinatesPlayer());
 					player.getCoordinatesPlayer().clear();
-					Controller.getInstance().getRoom().removePlayer(player);
+//					Controller.getInstance().getRoom().removePlayer(player);
 
 				}
 			}
@@ -413,8 +427,8 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 		// in questo array ci tengo le posizioni di tutti i miei avversari
 		player.getCoordinatesPlayer().add(pos);
 		// OponentPositions.add(pos);
-		System.out.println("Coordinate Ospiti" + motorbike.x + " , "
-				+ motorbike.y);
+//		System.out.println("Coordinate Ospiti" + motorbike.x + " , "
+//				+ motorbike.y);
 
 	}
 
@@ -494,4 +508,14 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 	}
+
+	public Graphics getG() {
+		return g;
+	}
+
+	public void setG(Graphics g) {
+		this.g = g;
+	}
+	
+
 }

@@ -75,7 +75,12 @@ public class RmiServer extends UnicastRemoteObject implements InterfaceRemoteMet
 		}
 		if (message.getPayload() instanceof Rectangle) {
 //			System.out.println("[" + Calendar.getInstance().getTimeInMillis() + "][RECTANGLE MESSAGE] X:"+((Rectangle) message.getPayload()).x + "  Y:"+((Rectangle) message.getPayload()).y);
-			Controller.getInstance().getFrameGUI().repaint((Rectangle) message.getPayload(), Controller.getInstance().getColorPlayerFromUUid(message.getUuid()));
+			try {
+				Controller.getInstance().getFrameGUI().repaint((Rectangle) message.getPayload(), Controller.getInstance().getColorPlayerFromUUid(message.getUuid()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+//			Controller.getInstance().getFrameGUI().repaint((Rectangle) message.getPayload(), Controller.getInstance().getColorPlayerFromUUid(message.getUuid()));
 		}
 		
 		try {
