@@ -61,7 +61,7 @@ public class StartPanel implements ChangeListener, ActionListener {
 		usernameLabel = new JLabel("Username:");
 		usernameField = new JTextField(10);
 		serverIpLabel = new JLabel("SERVER IP:");
-		ipField = new JTextField("130.136.0.0", 10);
+		ipField = new JTextField("130.136.4.0", 10);
 		serverCheckBox = new JCheckBox("Sono il server");
 		nplayersLabel = new JLabel("N. di giocatori:");
 		nplayersField = new JTextField(2);

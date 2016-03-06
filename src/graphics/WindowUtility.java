@@ -15,7 +15,7 @@ public class WindowUtility {
 	}
 	
 	public static void closeWindow(JFrame frame) {
-		frame.setVisible(true);
+		frame.setVisible(false);
 		frame.dispose();
 	}
 }

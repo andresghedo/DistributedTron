@@ -1,5 +1,6 @@
 package graphics;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -11,135 +12,118 @@ import java.awt.event.KeyListener;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
 
-import javax.sql.rowset.spi.SyncResolver;
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import registration.Player;
-
 import network.Controller;
 import network.RmiMessage;
 
-import graphics.StartPanel;
-
-public class SimpleTronFrame implements ActionListener, KeyListener {
+public class SimpleTronFrame implements ActionListener, KeyListener
+{	
 	/** DIREZIONI DI MOVIMENTO DELLA MOTO */
-	public static String[] direction = { "N", "S", "W", "E" };
+	public static String[] direction = {"N", "S", "W", "E"};
 	/** FINESTRA DI GIOCO */
-	public final int WIDTH = 1000, HEIGHT = 600;
+	public final int WIDTH = Controller.getInstance().WIDTH, HEIGHT = Controller.getInstance().HEIGHT;
 	/** GRANDEZZA QUADRATO DELLA MOTO */
-	public final int SIZE_MOTO = 3;
+	public final int SIZE_MOTO = Controller.getInstance().SIZE_MOTO;
 	/** UPDATE DELLA FINESTRA */
-	public final int TIMER_UPDATE = 20;
-	/** VELOCITA DELLA MOTO */
-	public final int SPEED = 2;
+	public final int TIMER_UPDATE = Controller.getInstance().TIMER_UPDATE;
+	/** VELOCITA DELLA MOTO*/
+	public final int SPEED = Controller.getInstance().SPEED;
+	/** X MASSIMA DELLA MATRICE DI GIOCO DELLE MOTO */
+	public final int MATRIX_X_SIZE = Controller.getInstance().MATRIX_X_SIZE;
+	/** Y MASSIMA DELLA MATRICE DI GIOCO DELLE MOTO */
+	public final int MATRIX_Y_SIZE = Controller.getInstance().MATRIX_Y_SIZE;
 	/** PANNELLO DI DISEGNO */
 	public JPanel panel;
 	/** RETTANGOLO CHE RAPPRESENTA LA MOTO */
 	public Rectangle motorbike;
 	/** BOOLEANO CHE INDICA GIOCO ATTIVO O MENO */
-	public boolean started = false;
+	public boolean started;
 	/** DIREZIONE CORRENTE DELLA MOTO */
 	public String currentDirection;
-	// Si ricorda della direzzione attuale della moto
-	public String OldDirection;
+	/** TIMER PER L'UPDATE DEL JPANEL */
 	public Timer timer;
-
-	private int i = 0;
-	// Imposti la larghezza dei bordi
-	private int NumLines = 5;
+	/** JFRAME DEL GIOCO */
+	public JFrame jframe;
+	/** MATRICE CHE CONTIENE LE POSIZIONI DELLE SCIE DEI GIOCATORI */
+	public char[][] matrix;
 	// Contiene il mio nome da giocaotore
 	public String MyName;
-	// contiene il mio attuale punteggio
-	private int Score = 0;
-	// numero di giocatori
-	private ArrayList<Player> AllPlayers;
+	public int score;
+	
+	public static final int NumLines = 2;
 
-	private int NumPlayer = 0;
-
-	private JFrame jframe;
-
-	private ArrayList<Positions> OponentPositions = new ArrayList<Positions>();
-
-	private ArrayList<Positions> OnlyMyPositions = new ArrayList<Positions>();
-
-	private Graphics g;
-	/**
-	 * COSTRUTTORE DI CLASSE setta il JFrame ed il Jpanel per la grafica e fa
-	 * partire il gioco, ovvero il timer per l'update della grafica e dei
-	 * movimenti della moto.
+	/** 
+	 *  COSTRUTTORE DI CLASSE 
+	 *	setta il JFrame ed il Jpanel per la grafica e fa partire il gioco,
+	 *  ovvero il timer per l'update della grafica e dei movimenti della moto.
 	 * 
 	 */
 	public SimpleTronFrame() {
+		score =0;
 		jframe = new JFrame();
 		timer = new Timer(TIMER_UPDATE, this);
 		panel = new JPanel();
 		jframe.add(panel);
+		// Il mio nome
+		MyName = Controller.getInstance().getMyPlayer().getUsername();
+		JLabel userLabel = new JLabel(MyName.toUpperCase());
+		userLabel.setForeground(Color.WHITE);
+		panel.add(userLabel);
 		panel.setBackground(Color.black);
+		panel.setBorder(BorderFactory.createMatteBorder(NumLines, NumLines, NumLines, NumLines, Controller.getInstance().getMyPlayer().getColor()));
 		jframe.setTitle("DISTRIBUTED TRON");
 		jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jframe.setSize(WIDTH, HEIGHT);
 		jframe.addKeyListener(this);
 		jframe.setResizable(false);
-		WindowUtility.centerWindow(jframe);
 		jframe.setVisible(true);
 
-		motorbike = new Rectangle(Controller.getInstance().getMyPlayer()
-				.getStartXPos(), HEIGHT - 32, SIZE_MOTO, SIZE_MOTO);
+		
+		motorbike = new Rectangle(Controller.getInstance().getMyPlayer().getStartXPos(), Controller.getInstance().getMyPlayer().getStartYPos(), SIZE_MOTO, SIZE_MOTO);
+		System.out.println("POSIZIONI DI PARTENZA  X:" + Controller.getInstance().getMyPlayer().getStartXPos() + "  Y:" + (HEIGHT-36));
 		panel.getGraphics().setColor(Color.black);
 		panel.getGraphics().fillRect(0, 0, WIDTH, HEIGHT);
-		// Il mio nome
-		MyName = Controller.getInstance().getMyPlayer().getUsername();
-
-		AllPlayers = Controller.getInstance().getRoom().getPlayers();
-
-		NumPlayer = Controller.getInstance().getRoom().getPlayers().size();
-		this.startGame(timer);
+		matrix = new char[MATRIX_X_SIZE][MATRIX_Y_SIZE];
+		for(int i=0; i < MATRIX_X_SIZE; i++)
+			for(int j=0; j < MATRIX_Y_SIZE; j++)
+				matrix[i][j] = '0';
+		WindowUtility.centerWindow(jframe);
+		this.startGame();
 	}
 
-	/**
-	 * Metodo che viene eseguito ad ogni frame update(TIMER_UPDATE), si
-	 * preoccupa di inviare la posizione della moto agli altri host e di
-	 * muoverla verso la direzione corrente.
+	/** 
+	 *  Metodo che viene eseguito ad ogni frame update(TIMER_UPDATE), 
+	 *  si preoccupa di inviare la posizione della moto agli altri host e di
+	 *  muoverla verso la direzione corrente.
 	 */
 	@Override
-	public  void actionPerformed(ActionEvent e) {
-		// System.out.println("[" + Calendar.getInstance().getTimeInMillis() +
-		// "][ACTION PERFORMED]");
+	public void actionPerformed(ActionEvent e){
 
+		System.out.println("[ACTION PERFORMED]");
+
+		// preparo il messaggio della uova posizione della moto da inviare nell'anello
 		String uuid = Controller.getInstance().getMyHost().getUUID();
 		RmiMessage m = new RmiMessage(motorbike, uuid);
-		
+		m.setId(Controller.getInstance().getMyPlayer().getId());
 
+		// invio il messaggio
 		try {
-			Controller.getInstance().getCommunication().getNextHostInterface()
-					.send(m);
-//			System.out.println("Fin Qui TUTTO BENE");
+			Controller.getInstance().getCommunication().getNextHostInterface().send(m);
 		} catch (RemoteException e1) {
-			 System.out.println("[" + Calendar.getInstance().getTimeInMillis()
-			 +
-			 "]########### REMOTE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+			System.out.println("########### REMOTE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 		} catch (NotBoundException e1) {
-			 System.out.println("[" + Calendar.getInstance().getTimeInMillis()
-			 +
-			 "]########### NOTBOUND EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+			System.out.println("########### NOTBOUND EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 		} catch (ServerNotActiveException e1) {
-			 System.out.println("[" + Calendar.getInstance().getTimeInMillis()
-			 +
-			 "]########### SERVERNOTACTIVE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
-		} catch (NullPointerException e1) { // return perchè nessuno parte
-											// quando tutti non sono pronti ad
-											// implementare la grafica
-			 e1.printStackTrace();
-			 System.out.println("[" + Calendar.getInstance().getTimeInMillis()
-			 +
-			 "]########### NULLPOINTER EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+			System.out.println("########### SERVERNOTACTIVE EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
+		} catch (NullPointerException e1) { // return perchè nessuno parte quando tutti non sono pronti ad implementare la grafica
+			System.out.println("########### NULLPOINTER EXCEPTION @ SIMPLETRONFRAME.ACTIONPERFORMED ###########");
 			return;
 		}
 
@@ -147,375 +131,187 @@ public class SimpleTronFrame implements ActionListener, KeyListener {
 			this.moveMoto();
 		}
 
-		this.repaint();
+		try {
+			this.repaint();
+		} catch (AWTException e1) {
+		}
 	}
 
-	/**
-	 * Metodo che muove la moto nella direzione corrente di quanto richiede la
-	 * velocità (SPEED).
+	/** 
+	 *  Metodo che muove la moto nella direzione corrente di 
+	 *  quanto richiede la velocità (SPEED).
 	 */
-	public synchronized void moveMoto() {
+	public void moveMoto() {
 
 		if (this.currentDirection.equals("N")) {
 			motorbike.y -= this.SPEED;
-		} else if (this.currentDirection.equals("S")) {
+		}
+		else if (this.currentDirection.equals("S")) {
 			motorbike.y += this.SPEED;
-		} else if (this.currentDirection.equals("W")) {
+		}
+		else if (this.currentDirection.equals("W")) {
 			motorbike.x -= this.SPEED;
-		} else if (this.currentDirection.equals("E")) {
+		}
+		else if (this.currentDirection.equals("E")) {
 			motorbike.x += this.SPEED;
 		}
-		OldDirection = currentDirection;
 	}
 
 	/**
-	 * Metodo che disegna graficamente la moto sul JPanel e controlla di non
-	 * andare a sbattere sulla propria scia
+	 * Metodo che disegna graficamente la moto sul JPanel
 	 */
-	public synchronized void drawMoto() {
-		Score++;
-		// // String visualPunteggio = Integer.toString(Score);
-		// // TODO
-		// g.drawString(" : "+Integer.toString(Score),
-		// (WIDTH/2)+MyName.length(), 15);
-		Positions CurrentPositions = new Positions(motorbike.x, motorbike.y);
-//		System.out.println("Coordinate Mie Iniziali " + motorbike.x + " , "
-//				+ motorbike.y);
+	public void drawMoto(Graphics g) {
+		score++;
 
-		// Se esco fuori dai bordi ho perso
-		if (motorbike.x < (0 + NumLines) || motorbike.x > (WIDTH - NumLines)
-				|| motorbike.y < (0 + NumLines)
-				|| motorbike.y > (HEIGHT - NumLines)) {
-			started = false;
-
-			clearPositions(g, OnlyMyPositions);
-			WindowUtility.closeWindow(jframe);
-//			JOptionPane.showMessageDialog(new JFrame(), "Punteggio : " + Score,
-//					"Hai Perso", JOptionPane.INFORMATION_MESSAGE);
-//			 System.exit(0);
-		}
-
-		// altrimenti vuol dire che sono all'interno del riquadro giusto e posso
-		// continuare a giocare
 		if (this.currentDirection.equals("N")) {
-			// System.out.println("Coordinate Mie Nord "+motorbike.x+" , "+motorbike.y+"-1");
-
-			g.fillRect(motorbike.x, motorbike.y, motorbike.width,
-					motorbike.height);
-
-			Positions newPositions = new Positions(motorbike.x, motorbike.y);
-			for (int j = 0; j < AllPlayers.size(); j++) {
-
-//				System.out.println("Ciclo i player");
-				ArrayList<Positions> myPositions = AllPlayers.get(j)
-						.getCoordinatesPlayer();
-				if (findPositions(newPositions, myPositions)
-						|| findPositions(newPositions, OnlyMyPositions)) {
-					System.out.println("Un Player ha perso");
-					clearPositions(g, OnlyMyPositions);
-					// player.getCoordinatesPlayer().clear();
-					// Controller.getInstance().getRoom().removePlayer(player);
-					started = false;
-					clearPositions(g, OnlyMyPositions);
-					WindowUtility.closeWindow(jframe);
-//					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-//							+ Score, "Hai Perso",
-//							JOptionPane.INFORMATION_MESSAGE);
-//					 System.exit(0);
-
-				}
-			}
-
-		} else if (this.currentDirection.equals("S")) {
-			// System.out.println("Coordinate Mie Sud "+motorbike.x+" , "+motorbike.y+i);
-
-			g.fillRect(motorbike.x, motorbike.y, motorbike.width,
-					motorbike.height);
-
-			Positions newPositions = new Positions(motorbike.x, motorbike.y);
-			for (int j = 0; j < AllPlayers.size(); j++) {
-
-//				System.out.println("Ciclo i player");
-				ArrayList<Positions> myPositions = AllPlayers.get(j)
-						.getCoordinatesPlayer();
-				if (findPositions(newPositions, myPositions)
-						|| findPositions(newPositions, OnlyMyPositions)) {
-					System.out.println("Un Player ha perso");
-					clearPositions(g, OnlyMyPositions);
-					// player.getCoordinatesPlayer().clear();
-					// Controller.getInstance().getRoom().removePlayer(player);
-					started = false;
-					clearPositions(g, OnlyMyPositions);
-					WindowUtility.closeWindow(jframe);
-//					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-//							+ Score, "Hai Perso",
-//							JOptionPane.INFORMATION_MESSAGE);
-//					 System.exit(0);
-
-				}
-
-			}
-
-		} else if (this.currentDirection.equals("W")) {
-
-			g.fillRect(motorbike.x, motorbike.y, motorbike.width,
-					motorbike.height);
-			Positions newPositions = new Positions(motorbike.x, motorbike.y);
-			for (int j = 0; j < AllPlayers.size(); j++) {
-
-//				System.out.println("Ciclo i player");
-				ArrayList<Positions> myPositions = AllPlayers.get(j)
-						.getCoordinatesPlayer();
-				if (findPositions(newPositions, myPositions)
-						|| findPositions(newPositions, OnlyMyPositions)) {
-					System.out.println("Un Player ha perso");
-					clearPositions(g, OnlyMyPositions);
-					// player.getCoordinatesPlayer().clear();
-					// Controller.getInstance().getRoom().removePlayer(player);
-					started = false;
-					clearPositions(g, OnlyMyPositions);
-					WindowUtility.closeWindow(jframe);
-//					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-//							+ Score, "Hai Perso",
-//							JOptionPane.INFORMATION_MESSAGE);
-//					 System.exit(0);
-
-				}
-			}
-
-		} else if (this.currentDirection.equals("E")) {
-
-			g.fillRect(motorbike.x, motorbike.y, motorbike.width,
-					motorbike.height);
-			Positions newPositions = new Positions(motorbike.x, motorbike.y);
-			for (int j = 0; j < AllPlayers.size(); j++) {
-
-//				System.out.println("Ciclo i player");
-				ArrayList<Positions> myPositions = AllPlayers.get(j)
-						.getCoordinatesPlayer();
-				if (findPositions(newPositions, myPositions)
-						|| findPositions(newPositions, OnlyMyPositions)) {
-					System.out.println("Un Player ha perso");
-					clearPositions(g, OnlyMyPositions);
-					// player.getCoordinatesPlayer().clear();
-					// Controller.getInstance().getRoom().removePlayer(player);
-					started = false;
-					clearPositions(g, OnlyMyPositions);
-					WindowUtility.closeWindow(jframe);
-//					JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-//							+ Score, "Hai Perso",
-//							JOptionPane.INFORMATION_MESSAGE);
-//					 System.exit(0);
-
-				}
-			}
-
+			g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height+SPEED);
+		}
+		else if (this.currentDirection.equals("S")) {
+			g.fillRect(motorbike.x, motorbike.y-SPEED, motorbike.width, motorbike.height+SPEED);
+		}
+		else if (this.currentDirection.equals("W")) {
+			g.fillRect(motorbike.x, motorbike.y, motorbike.width+SPEED, motorbike.height);
+		}
+		else if (this.currentDirection.equals("E")) {
+			g.fillRect(motorbike.x-SPEED, motorbike.y, motorbike.width+SPEED, motorbike.height);
 		}
 
-		// MyOldestPositions.add(CurrentPositions);
+	    System.out.println("POSIZIONE MOTO PATCH X:" + motorbike.x/SIZE_MOTO + "  Y:" + motorbike.y/SIZE_MOTO);
+	    if (this.checkBorder(motorbike.x/SIZE_MOTO, motorbike.y/SIZE_MOTO) || (matrix[motorbike.x/SIZE_MOTO][motorbike.y/SIZE_MOTO] != '0')) {
+	    	if(this.checkBorder(motorbike.x/SIZE_MOTO, motorbike.y/SIZE_MOTO)){
+	    		System.out.println("[EXIT] SONO USCITO DAI BORDI!");
+	    	}	    		
+	    	else { 
+	    		System.out.println("[EXIT] SCONTRO CON UN'ALTRA MOTO!");
+	    	}
+	    		
+	    	System.exit(0);
+	    }
+	    // Setto la posizione come occupata dalla moto con un suo identificativo
+	    matrix[motorbike.x/SIZE_MOTO][motorbike.y/SIZE_MOTO] = Controller.getInstance().getMyPlayer().getId();
+	}
 
-		OnlyMyPositions.add(CurrentPositions);
-		// Player p = Controller.getInstance().getMyPlayer();
-		// p.getCoordinatesPlayer().add(new Positions(motorbike.x,motorbike.y));
+	/** Metodo privato che controlla se la patch su cui voglio muovere la moto esce dai bordi */
+	private boolean checkBorder(int patchX, int patchY) {
 
+		if ((patchX >= MATRIX_X_SIZE) || (patchX < 0))
+			return true;
+		if ((patchY >= MATRIX_Y_SIZE) || (patchY < 0))
+			return true;
+		return false;
 	}
 
 	/**
 	 * Metodo che decreta l'inizio del gioco.
 	 */
-	public synchronized void startGame(Timer t) {
+	public void startGame() {
+
 		if (!started) {
-			// t.setInitialDelay(1000); // messo un delay iniziale per evitare
-			// che qualche nodo non abbia istanziato il frame
-			t.start();
-			System.out.println("[" + Calendar.getInstance().getTimeInMillis()
-					+ "][STARTING GUI FRAME]");
+			timer.start();
+			System.out.println("[STARTING GUI FRAME]");
 			panel.getGraphics().setColor(Color.black);
-			// panel.getGraphics().fillRect(0, 0, WIDTH, HEIGHT);
-			this.currentDirection = "N";
-
+			panel.getGraphics().fillRect(0, 0, WIDTH, HEIGHT);
+			this.currentDirection = Controller.getInstance().getMyPlayer().getStartDirection();
 			started = true;
-
 		}
 	}
 
 	/**
-	 * Metodo di repaint del JPanel, aggiorna il movimento della moto.
+	 * Metodo che stampa un messaggio al vincitore.
 	 */
-	public synchronized void repaint() {
+	public void setWinnerLabel() {
 
-		g = this.panel.getGraphics();
+		timer.stop();
+		System.out.println("[WINNER]");
+		JOptionPane.showMessageDialog(null, "Hai Vinto! "+ Integer.toString(score), " DISTRIBUTED TRON", JOptionPane.INFORMATION_MESSAGE);
+		System.exit(0);
+	}
+
+	/** Metodo che rimuove dalla matrice di gioco la scia relativa ad un giocatore che ha perso/andato in crash */
+	public void removeCrashedNode(char id) {
+
+		Graphics g = this.panel.getGraphics();
+
+		for(int i=0; i < MATRIX_X_SIZE; i++)
+			for(int j=0; j < MATRIX_Y_SIZE; j++) 
+				if (matrix[i][j] == id) {
+					matrix[i][j] = '0';
+					g.setColor(Color.black);
+					g.fillRect(i*4, j*4, motorbike.width, motorbike.height);
+			}
+	}
+
+	/**
+	 *  Metodo di repaint del JPanel, aggiorna il movimento della moto.
+	 * @throws AWTException 
+	 */
+	public void repaint() throws AWTException
+	{
 		
-		try {
+		Graphics g = this.panel.getGraphics();
+		if(started) {
 			g.setColor(Controller.getInstance().getMyPlayer().getColor());
-		} catch (Exception e) {
-			System.exit(0);
+			this.drawMoto(g);
 		}
-		
-		// scrivo il mio nome a video
-		g.drawString(MyName, WIDTH / 2, 15);
-
-		// Disegna i bordi della pista
-		for (i = 0; i < NumLines; i++) {
-			g.drawLine(i, 0, i, HEIGHT);
-			g.drawLine(0, i, WIDTH, i);
-			g.drawLine(WIDTH - i, 0, WIDTH - i, HEIGHT - 1);
-			g.drawLine(0, HEIGHT - i, WIDTH - 2, HEIGHT - i);
-		}
-
-		if (started) {
-
-			this.drawMoto();
-		} else {
+		else {
+			
 			g.setColor(Controller.getInstance().getMyPlayer().getColor());
+			g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height);
 			g.setColor(Color.red);
 			g.setFont(new Font("Arial", 1, 20));
-			g.drawString("Hai Perso", WIDTH / 10, HEIGHT / 10);
-			
-			 if(NumPlayer <= 1){
-			 WindowUtility.closeWindow(jframe);
-			 JOptionPane.showMessageDialog(new JFrame(), "Punteggio : "
-						+ Score, "Hai Vinto",
-						JOptionPane.INFORMATION_MESSAGE);
-			
-			 }
-
+			g.drawString("KEY UP TO START!", 15, HEIGHT / 10);
 		}
 	}
 
 	/**
-	 * Metodo che disegna una moto di un colore c, passati come parametri. Viene
-	 * utilizzato all'arrivo di messaggi esterni per disegnare moto avversarie.
+	 *  Metodo che disegna una moto di un colore c, passati come parametri.
+	 *  Viene utilizzato all'arrivo di messaggi esterni per disegnare moto avversarie.
 	 */
-	public synchronized void repaint(Rectangle motorbike, Color c) {
-		// System.out.println("[" + Calendar.getInstance().getTimeInMillis() +
-		// "][REPAINT DEBUG]");
-		g = this.panel.getGraphics();
-		try {
-			g.setColor(c);
-		} catch (Exception e) {
-			System.exit(0);
-		}
-		
-		// il mio colore
-		Color mycolor = Controller.getInstance().getMyPlayer().getColor();
-		Positions pos = new Positions(motorbike.x, motorbike.y);
-		Player player = Controller.getInstance().getPlayerByColor(c);
-
+	public void repaint(Rectangle motorbike, Color c, char idPlayer)
+	{
+		System.out.println("[REPAINT DEBUG]");
+		Graphics g = this.panel.getGraphics();
+		g.setColor(c);
 		g.fillRect(motorbike.x, motorbike.y, motorbike.width, motorbike.height);
-
-		if (player != null) {
-			// if (!mycolor.equals(c)) {
-//			System.out.println("Player diverso dal null");
-			for (int i = 0; i < AllPlayers.size(); i++) {
-//				System.out.println("Ciclo i player");
-				ArrayList<Positions> myPositions = AllPlayers.get(i)
-						.getCoordinatesPlayer();
-				if (findPositions(pos, myPositions)
-						|| findPositions(pos, OnlyMyPositions)) {
-					System.out.println("Un Player ha perso");
-					clearPositions(g, player.getCoordinatesPlayer());
-					player.getCoordinatesPlayer().clear();
-//					Controller.getInstance().getRoom().removePlayer(player);
-
-				}
-			}
-		}
-
-		// Player p = Controller.getInstance().getPlayerByColor(c);
-		// p.getCoordinatesPlayer().add(new Positions(motorbike.x,motorbike.y));
-		// in questo array ci tengo le posizioni di tutti i miei avversari
-		player.getCoordinatesPlayer().add(pos);
-		// OponentPositions.add(pos);
-//		System.out.println("Coordinate Ospiti" + motorbike.x + " , "
-//				+ motorbike.y);
-
-	}
-
-	// Controlla che le attuali coordinate di tron siano inesplorate
-	private synchronized boolean findPositions(Positions currentPositions,
-			ArrayList<Positions> positions) {
-		boolean find = false;
-		if (!positions.isEmpty()) {
-			try {
-				for (Positions p : positions) {
-					if (p.getX() == currentPositions.getX()
-							&& p.getY() == currentPositions.getY()) {
-						// System.out.println(currentPositions.getX()+","+currentPositions.getY());
-						// System.out.println(p.getX()+","+p.getY());
-						find = true;
-						break;
-					}
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				return find;
-			}
-			
-
-		}
-
-		return find;
-
-	}
-
-	// elimina le coordinate dei giocatori che perdono
-	public synchronized void clearPositions(Graphics g, ArrayList<Positions> positions) {
-		g.setColor(Color.black);
-		for (Positions p : positions) {
-			int a = p.getX();
-			int b = p.getY();
-			g.fillRect(a, b, motorbike.width, motorbike.height);
-
-		}
-		NumPlayer--;
-
+		matrix[motorbike.x/SIZE_MOTO][motorbike.y/SIZE_MOTO] = idPlayer;
 	}
 
 	/**
-	 * Metodo che implementa l'ascoltatre alla pressioni delle frecce. Cambia
-	 * solo la direzione corrente della moto, dato che il movimento è
-	 * automatico, Faccio il controllo e non permetto alla moto di ritornare
-	 * indietro
+	 *  Metodo che implementa l'ascoltatre alla pressioni delle frecce.
+	 *  Cambia solo la direzione corrente della moto, dato che il movimento 
+	 *  è automatico
 	 */
 	@Override
-	public void keyReleased(KeyEvent e) {
+	public void keyReleased(KeyEvent e)
+	{
 		int keyCode = e.getKeyCode();
-		switch (keyCode) {
-		case KeyEvent.VK_UP:
-			if (OldDirection != "S")
-				this.currentDirection = "N";
-			break;
-		case KeyEvent.VK_DOWN:
-			if (OldDirection != "N")
-				this.currentDirection = "S";
-			break;
-		case KeyEvent.VK_LEFT:
-			if (OldDirection != "E")
-				this.currentDirection = "W";
-			break;
-		case KeyEvent.VK_RIGHT:
-			if (OldDirection != "W")
-				this.currentDirection = "E";
-			break;
-		}
+	    switch( keyCode ) { 
+	        case KeyEvent.VK_UP:
+	        	if (!this.currentDirection.equals("S"))
+	        		this.currentDirection = "N";
+	            break;
+	        case KeyEvent.VK_DOWN:
+	        	if (!this.currentDirection.equals("N"))
+	        		this.currentDirection = "S";
+	            break;
+	        case KeyEvent.VK_LEFT:
+	        	if (!this.currentDirection.equals("E"))
+	        		this.currentDirection = "W";
+	            break;
+	        case KeyEvent.VK_RIGHT :
+	        	if (!this.currentDirection.equals("W"))
+	        		this.currentDirection = "E";
+	            break;
+	     }
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
+	public void keyTyped(KeyEvent e)
+	{
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
+	public void keyPressed(KeyEvent e)
+	{
 	}
-
-	public Graphics getG() {
-		return g;
-	}
-
-	public void setG(Graphics g) {
-		this.g = g;
-	}
-	
-
 }

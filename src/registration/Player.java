@@ -1,10 +1,7 @@
 package registration;
 
-import graphics.Positions;
-
 import java.awt.Color;
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import network.Host;
 
@@ -21,60 +18,76 @@ public class Player implements Serializable {
 	private Color color;
 	/** classe host che tiene traccia dei parametri di networking */
 	private Host host;
-	/** posizione iniziale della moto del player nell'interfaccia grafica */
+	/** posizione iniziale X della moto del player nell'interfaccia grafica */
 	private int startXPos;
-	
-	private ArrayList<Positions> CoordinatesPlayer;
-	
+	/** posizione iniziale Y della moto del player nell'interfaccia grafica */
+	private int startYPos;
+	/** direzione iniziale della moto del player nell'interfaccia grafica */
+	private String startDirection;
+	/** id univoco rappresentato da un char, necessario per la griglia di gioco*/
+	char id;
+
 	public Player() {}
-	
+
 	public Player(String u, Host h, Color c) {
 		this.username = u;
 		this.color = c;
 		this.host = h;
-		this.CoordinatesPlayer = new ArrayList<Positions>();
 	}
-	
+
 	public String getUsername() {
 		return this.username;
 	}
-	
+
 	public void setUsername(String u) {
 		this.username = u;
 	}
-	
-	public synchronized Color getColor() {
+
+	public Color getColor() {
 		return this.color;
 	}
-	
-	public synchronized void setColor(Color c) {
+
+	public void setColor(Color c) {
 		this.color = c;
 	}
-	
+
 	public Host getHost() {
 		return this.host;
 	}
-	
+
 	public void setHost(Host h) {
 		this.host = h;
 	}
-	
+
 	public int getStartXPos() {
 		return this.startXPos;
 	}
-	
+
 	public void setStartXPos(int x) {
 		this.startXPos = x;
 	}
 
-	public ArrayList<Positions> getCoordinatesPlayer() {
-		return CoordinatesPlayer;
+	public int getStartYPos() {
+		return this.startYPos;
 	}
 
-	public void setCoordinatesPlayer(ArrayList<Positions> coordinatesPlayer) {
-		CoordinatesPlayer = coordinatesPlayer;
+	public void setStartYPos(int y) {
+		this.startYPos = y;
 	}
-	
-	
 
+	public String getStartDirection() {
+		return this.startDirection;
+	}
+
+	public void setStartDirection(String d) {
+		this.startDirection = d;
+	}
+
+	public char getId() {
+		return this.id;
+	}
+
+	public void setId(char x) {
+		this.id = x;
+	}
 }

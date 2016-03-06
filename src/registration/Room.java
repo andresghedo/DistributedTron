@@ -1,13 +1,7 @@
 package registration;
 
-import graphics.SimpleTronFrame;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import javax.swing.JFrame;
-
-import network.Controller;
 
 /**
  * Classe che tiene traccia dei giocatori seduti alla stanza di gioco
@@ -19,7 +13,7 @@ public class Room implements Serializable{
 	private int startPlayers;
 	/** arraylist di Host*/
 	private ArrayList<Player> players;
-	
+
 	public Room() {
 		this.players = new ArrayList<Player>();
 	}
@@ -28,11 +22,11 @@ public class Room implements Serializable{
 		this.startPlayers = sp;
 		this.players = new ArrayList<Player>();
 	}
-	
+
 	public int getStartPlayers() {
 		return this.startPlayers;
 	}
-	
+
 	public void setStartPlayers(int sp) {
 		this.startPlayers = sp;
 	}
@@ -47,7 +41,7 @@ public class Room implements Serializable{
 			return true;
 		return false;
 	}
-	
+
 	/** Ritorna il numero di giocatori mancanti */
 	public int getMissingPlayers() {
 		return (this.startPlayers - this.getCurrentPlayers());
@@ -64,11 +58,11 @@ public class Room implements Serializable{
 	public void removePlayerFromIndex(int index) {
 		this.players.remove(index);
 	}
-	
+
 	/** Ritorna l'Host successivo, nella configurazione dell'anello unidirezionale,
 	 *  all'host dato come parametro.
 	 */
-	public  Player getNext(Player p) {
+	public Player getNext(Player p) {
 		for (int i = 0; i < this.players.size(); i++) {
 			Player current = this.players.get(i);
 			if((current.getHost().getIP().equals(p.getHost().getIP())) && (current.getHost().getPort() == p.getHost().getPort()) && (current.getHost().getUUID().equals(p.getHost().getUUID()))) {
@@ -80,7 +74,7 @@ public class Room implements Serializable{
         }
 		return null;
 	}
-	
+
 	/** 
 	 *  Rimuove il player dato in input alla funzione.
 	 */
@@ -88,8 +82,6 @@ public class Room implements Serializable{
 		for (int i = 0; i < this.players.size(); i++) {
 			Player current = this.players.get(i);
 			if((current.getHost().getIP().equals(p.getHost().getIP())) && (current.getHost().getPort() == p.getHost().getPort()) && (current.getHost().getUUID().equals(p.getHost().getUUID()))) {
-				SimpleTronFrame f = Controller.getInstance().getFrameGUI();
-				f.clearPositions(f.getG(), this.players.get(i).getCoordinatesPlayer());
 				this.players.remove(i);
 			}
         }

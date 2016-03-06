@@ -14,21 +14,30 @@ public class RmiMessage implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String uuid;
 	private Object payload;
-	
+	private char idPlayer;
+
 	public RmiMessage(Object o, String uuid) {
 		this.payload = o;
 		this.uuid = uuid;
 	}
-	
+
 	public Object getPayload(){
 		return this.payload;
 	}
-	
+
 	public String  getUuid() {
 		return this.uuid;
 	}
-	
+
 	public void setPayload(Object o) {
 		this.payload = o;
+	}
+
+	public char  getId() {
+		return this.idPlayer;
+	}
+
+	public void setId(char c) {
+		this.idPlayer = c;
 	}
 }

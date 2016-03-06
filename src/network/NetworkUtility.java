@@ -11,14 +11,14 @@ import java.util.*;
 public class NetworkUtility {
 
 	private static NetworkUtility instance;
-	
+
 	/** cerca l'istanza, se la trova la torna altrimenti la crea */
 	public static NetworkUtility getInstance() {
         if(instance == null)
             instance = new NetworkUtility();
         return instance;
     }
-    
+
     /**
      * Ritorna un indirizzo ip pubblico della macchina.
      * Quello che inizia con 192.168
@@ -35,7 +35,7 @@ public class NetworkUtility {
 
                     if(address instanceof Inet4Address){
                     	String strHostIp = address.getHostAddress();
-                		//if (strHostIp.startsWith("192.168"))
+                		if (strHostIp.startsWith("192.168"))
                 			return strHostIp;
                     }
                 }
@@ -43,7 +43,7 @@ public class NetworkUtility {
         }
         return null;
     }
-    
+
     /**
      * Torna un uuid univoco in modo da identificare, appunto univocamente,
      * il messaggio e l'host stesso.
