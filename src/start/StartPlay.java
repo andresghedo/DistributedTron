@@ -12,7 +12,6 @@ import java.rmi.server.ServerNotActiveException;
 import java.text.ParseException;
 
 import graphics.StartPanel;
-import graphics.WindowUtility;
 import network.Controller;
 import network.Host;
 import network.NetworkUtility;
