@@ -42,15 +42,17 @@ public class RmiServerRegistration extends UnicastRemoteObject implements Interf
 	 * pacchetto nell'anello con la configurazione dello stesso, in modo che ogni nodo riesca 
 	 * a settarsela personalmente.
 	 */
-	public void addPlayer(Player p) throws InterruptedException, ServerNotActiveException {
+	public Color addPlayer(Player p) throws InterruptedException, ServerNotActiveException {
 		System.out.println("[REGISTRATION SERVICE] AGGIUNTO HOST IP: "+p.getHost().getIP()+"  e PORT:"+p.getHost().getPort());
-		p.setColor(this.colors.remove(0));
+		Color c = this.colors.remove(0);
+		p.setColor(c);
 		p.setStartXPos(this.startX[idPlayer-1]);
 		p.setStartYPos(this.startY[idPlayer-1]);
 		p.setStartDirection(this.startDirections[idPlayer-1]);
 		p.setId((char)(idPlayer + '0'));
 		idPlayer += 1;
 		this.room.addPlayer(p);
+		Controller.getInstance().getStartPanel().informServerHostRegistred(this.room);
 		System.out.println("[REGISTRATION SERVICE] NUMERO DI GIOCATORI MANCANTI ALL'INIZIO: " + this.room.getMissingPlayers());
 		if (this.room.isCompleted()) {
 			System.out.println("[REGISTRAZIONE] ROOM COMPLETATA, CONFIGURAZIONE IN SENDING...");
@@ -65,6 +67,7 @@ public class RmiServerRegistration extends UnicastRemoteObject implements Interf
 				System.out.println("########### NOTBOUND EXCEPTION @ RMISERVERREGISTRATION.ADDPLAYER ###########");
 			}
 		}
+		return c;
 	}
 
 	/**

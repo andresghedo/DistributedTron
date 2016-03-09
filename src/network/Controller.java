@@ -1,6 +1,7 @@
 package network;
 
 import graphics.SimpleTronFrame;
+import graphics.StartPanel;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ public class Controller {
 	private boolean showGUI = false;
 	/** istanza della classe SimpleTronFrame che fornisce il JFrame della GUI */
 	private SimpleTronFrame frameGUI;
+	/** istanza della classe StartPanel che fornisce il pannello di registrazione iniziale */
+	private StartPanel startPanel;
 	/** booleano che notifica se il player sta già giocando o meno */
 	private boolean isGaming = false;
 	/** FINESTRA DI GIOCO */
@@ -147,6 +150,14 @@ public class Controller {
 
 	public SimpleTronFrame getFrameGUI() {
 		return this.frameGUI;
+	}
+
+	public void setStartPanel(StartPanel sp) {
+		this.startPanel = sp;
+	}
+
+	public StartPanel getStartPanel() {
+		return this.startPanel;
 	}
 
 	public void setIsGaming(boolean b) {

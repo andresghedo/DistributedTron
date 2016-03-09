@@ -19,18 +19,20 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import network.NetworkUtility;
+import registration.Room;
 import start.StartPlay;
 
 public class StartPanel implements ChangeListener, ActionListener {
 
 	/** GRANDEZZE FINESTRA DI IMPOSTAZIONI **/
-	private final int WIDTH = 500, HEIGHT = 300;
+	private final int WIDTH = 500, HEIGHT = 400;
 	Integer[] N_PLAYER = { 1, 2, 3, 4, 5, 6 };
 	/** ELEMENTI GRAFICI **/
 	private JFrame jFrame;
@@ -44,6 +46,10 @@ public class StartPanel implements ChangeListener, ActionListener {
 	private JLabel showIPLabel;
 	private JButton connectButton;
 	private JComboBox nPlayersSelect;
+	private JLabel loading;
+	private JLabel informColor;
+	private JLabel playerColor;
+	private JTextArea textAreaServer;
 	/** VARIABILI GLOBALI UTILI PER COMINCIARE LA PARTITA **/
 	private String serverIP;
 	private String username;
@@ -63,7 +69,10 @@ public class StartPanel implements ChangeListener, ActionListener {
 		nPlayersSelect = new JComboBox(N_PLAYER);
 		showIPLabel = new JLabel();
 		connectButton = new JButton("Connetti");
-
+		loading = new JLabel("");
+		informColor = new JLabel("IL MIO COLORE SARÀ: ");
+		playerColor = new JLabel("        ");
+		textAreaServer = new JTextArea(7,40);
 		// impostazione degli elementi grafici
 		jFrame.setSize(WIDTH, HEIGHT);
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,6 +80,10 @@ public class StartPanel implements ChangeListener, ActionListener {
 		nplayersLabel.setVisible(false);
 		nPlayersSelect.setVisible(false);
 		showIPLabel.setVisible(false);
+		loading.setVisible(true);
+		informColor.setVisible(false);
+		playerColor.setVisible(false);
+		textAreaServer.setVisible(false);
 		connectButton.setVerticalTextPosition(AbstractButton.CENTER);
 		connectButton.setHorizontalTextPosition(AbstractButton.LEADING);
 		// aggiunta dei listener alla checkbox ed al button di connessione
@@ -90,6 +103,10 @@ public class StartPanel implements ChangeListener, ActionListener {
 		panel.add(nPlayersSelect);
 		panel.add(showIPLabel);
 		panel.add(connectButton);
+		panel.add(loading);
+		panel.add(informColor);
+		panel.add(playerColor);
+		panel.add(textAreaServer);
 		jFrame.add(panel);
 
 		WindowUtility.centerWindow(jFrame);
@@ -124,6 +141,14 @@ public class StartPanel implements ChangeListener, ActionListener {
 		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, showIPLabel, 0, SpringLayout.HORIZONTAL_CENTER, panel);
 		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, connectButton, 0, SpringLayout.HORIZONTAL_CENTER, panel);
 		layout.putConstraint(SpringLayout.NORTH, connectButton, 10, SpringLayout.SOUTH, showIPLabel);
+		layout.putConstraint(SpringLayout.WEST, informColor, 10, SpringLayout.WEST, panel);
+		layout.putConstraint(SpringLayout.NORTH, informColor, 10, SpringLayout.SOUTH, connectButton);
+		layout.putConstraint(SpringLayout.WEST, playerColor, 10, SpringLayout.EAST, informColor);
+		layout.putConstraint(SpringLayout.NORTH, playerColor, 10, SpringLayout.SOUTH, connectButton);
+		layout.putConstraint(SpringLayout.WEST, loading, 10, SpringLayout.WEST, panel);
+		layout.putConstraint(SpringLayout.NORTH, loading, 22, SpringLayout.NORTH, informColor);
+		layout.putConstraint(SpringLayout.WEST, textAreaServer, 10, SpringLayout.WEST, panel);
+		layout.putConstraint(SpringLayout.NORTH, textAreaServer, 22, SpringLayout.NORTH, loading);
 	}
 
 	// listener della checkbox server
@@ -157,12 +182,58 @@ public class StartPanel implements ChangeListener, ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		if (checkErrors()) {
+			connectButton.setEnabled(false);
 			try {
 				setUsername(usernameField.getText());
 				if (serverCheckBox.isSelected()) {
+					this.informColorPlayer(Color.red);
+					Thread t = new Thread(new Runnable() {
+						public void run() {
+							try {
+								loading.setText("In attesa di giocatori ");
+								for (int i = 1; i <= 10; i++){
+									Thread.sleep(100);
+									if(i == 10) {
+										i = 0;
+										loading.setText("In attesa di giocatori ");
+									} else {
+										String l = loading.getText();
+										l = l + ".";
+										loading.setText(l);
+									}
+								}
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+					      }
+					    });
+					    t.start();
 					setServerIP("SERVER");
 					setNPlayers(nPlayers);
 				} else {
+					Thread t = new Thread(new Runnable() {
+						public void run() {
+							try {
+								loading.setText("Attendere ");
+								for (int i = 1; i <= 10; i++){
+									Thread.sleep(100);
+									if(i == 10) {
+										i = 0;
+										loading.setText("Attendere ");
+									} else {
+										String l = loading.getText();
+										l = l + ".";
+										loading.setText(l);
+									}
+								}
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					});
+				    t.start();
 					setServerIP(ipField.getText());
 				}
 				StartPlay.connect(this);
@@ -181,6 +252,22 @@ public class StartPanel implements ChangeListener, ActionListener {
 			} catch (ServerNotActiveException e1) {
 				e1.printStackTrace();
 			}
+		}
+	}
+
+	public void informColorPlayer(Color c) {
+		informColor.setVisible(true);
+		playerColor.setVisible(true);
+		playerColor.setBackground(c);
+		playerColor.setOpaque(true);
+	}
+
+	public void informServerHostRegistred(Room r) {
+		textAreaServer.setVisible(true);
+		textAreaServer.setEditable(false);
+		textAreaServer.setText("NUMERO DI GIOCATORI REGISTRATI:     " + r.getCurrentPlayers() + " / " + r.getStartPlayers());
+		for (int i=0; i<r.getPlayers().size();i++) {
+			textAreaServer.append("\n" + r.getPlayers().get(i).getId() + ")" + r.getPlayers().get(i).getUsername() + "  -  " + r.getPlayers().get(i).getHost().getIP());
 		}
 	}
 

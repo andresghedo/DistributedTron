@@ -1,5 +1,6 @@
 package start;
 
+import java.awt.Color;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.rmi.AccessException;
@@ -60,7 +61,8 @@ public class StartPlay {
 	public static void main(String[] args) throws RemoteException, UnknownHostException, SocketException, AlreadyBoundException, NotBoundException, InterruptedException, ServerNotActiveException, ParseException {
 		// istanziazione della finestra di configurazione dei
 		// parametri della partita
-		new StartPanel();
+		StartPanel sp = new StartPanel();
+		Controller.getInstance().setStartPanel(sp);
 	}
 	
 	/**
@@ -99,8 +101,9 @@ public class StartPlay {
 			Host myHost = new Host(NetworkUtility.getInstance().getHostAddress(), 1234);
 			Player myPlayer = new Player(username, myHost, null);
 			Controller.getInstance().setMyPlayer(myPlayer);
-			registrationServer.addPlayer(myPlayer);
-			System.out.println("[HOST REGISTRED]"); 
+			Color c = registrationServer.addPlayer(myPlayer);
+			System.out.println("[HOST REGISTRED]");
+			sp.informColorPlayer(c);
 		}
 	}
 	

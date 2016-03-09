@@ -1,5 +1,6 @@
 package registration;
 
+import java.awt.Color;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
@@ -12,7 +13,7 @@ import java.rmi.server.ServerNotActiveException;
  */
 public interface InterfaceRemoteMethodRegistration extends Remote {
 	/** Aggiunta di un giocatore al tavolo di gioco */
-	void addPlayer(Player p) throws RemoteException, InterruptedException, ServerNotActiveException;
+	Color addPlayer(Player p) throws RemoteException, InterruptedException, ServerNotActiveException;
 	/** Indica il numero di giocatori seduti al tavolo*/
 	int getCurrentPlayers() throws RemoteException;
 	/** Ritorna la stanza di gioco */
