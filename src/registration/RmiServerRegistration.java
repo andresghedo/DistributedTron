@@ -22,7 +22,7 @@ public class RmiServerRegistration extends UnicastRemoteObject implements Interf
 	private static int MARGIN = 40;
 	private static int MAX_X = Controller.getInstance().WIDTH - MARGIN;
 	private static int MAX_Y = Controller.getInstance().HEIGHT - 36 - MARGIN;
-	private static int MIDDLE_Y = (Controller.getInstance().HEIGHT - 36) / 2;
+	private static int MIDDLE_Y = (Controller.getInstance().HEIGHT - 32) / 2;
 	private int[] startX = {MARGIN, MAX_X, MARGIN, MAX_X, MARGIN, MAX_X };
 	private int[] startY = {MAX_Y, MAX_Y, MARGIN, MARGIN, MIDDLE_Y, MIDDLE_Y };
 	private String[] startDirections = {"E", "W", "E", "W", "E", "W" };
