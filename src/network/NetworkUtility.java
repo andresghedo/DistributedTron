@@ -21,7 +21,6 @@ public class NetworkUtility {
 
     /**
      * Ritorna un indirizzo ip pubblico della macchina.
-     * Quello che inizia con 192.168
      * @return string
      * @throws UnknownHostException
      */
@@ -35,8 +34,7 @@ public class NetworkUtility {
 
                     if(address instanceof Inet4Address){
                     	String strHostIp = address.getHostAddress();
-                		if (strHostIp.startsWith("192.168"))
-                			return strHostIp;
+                    	return strHostIp;
                     }
                 }
             }
