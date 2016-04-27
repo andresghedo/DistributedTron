@@ -25,7 +25,7 @@
 </ol>
 
 # Registrazione al gioco e avvio
-Come prima cosa <b>uno ed uno solo</b> dei giocatori deve fungere da <i>Servizio di Registrazione</i>, dando così la possibilità agli altri giocatori di registrarsi al servizio di gioco. Ciò è possibile farlo cliccando sulla spunta "Sono il server", indicando il numero di giocatori che si intende far giocare e premendo il pulsante <i>"Connetti"</i>:
+Come prima cosa <b>uno ed uno solo</b> dei giocatori deve fungere da <i>Servizio di Registrazione</i>, dando così la possibilità agli altri giocatori di registrarsi al servizio di gioco. Ciò è possibile farlo cliccando sulla spunta <i>"Sono il server"</i>, indicando il numero di giocatori che si intende far giocare e premendo il pulsante <i>"Connetti"</i>:
 <p align="center">
   <img src="/img/Server.png" width="350"/>
 </p>
@@ -34,3 +34,10 @@ I restanti giocatori(oltre al giocatore <i>Andrea</i> di colore rosso che funge 
 <p align="center">
   <img src="/img/Slave.png" width="350"/>
 </p>
+
+# Credits
+<ul>
+  <li>Andrea Sghedoni [ <a href="andre.sghedoni@gmail.com">andre.sghedoni@gmail.com</a> ]
+  <li>Orgest Shehaj
+  <li>Antonio Carbonara 
+</ul>
