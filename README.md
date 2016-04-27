@@ -37,7 +37,7 @@ I restanti giocatori(oltre al giocatore <i>Andrea</i> di colore rosso che funge 
 
 # Credits
 <ul>
-  <li>Andrea Sghedoni [ <a href="andre.sghedoni@gmail.com">andre.sghedoni@gmail.com</a> ]
+  <li>Andrea Sghedoni [ <a href="mailto:andre.sghedoni@gmail.com">andre.sghedoni@gmail.com</a> ]
   <li>Orgest Shehaj
   <li>Antonio Carbonara 
 </ul>
