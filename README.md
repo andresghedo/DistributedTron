@@ -11,13 +11,13 @@
 
 # Installazione
 <ol>
- <li>aprire il progetto con Eclipse:
+ <li>[PRIMO METODO]aprire il progetto con Eclipse:
     <ul>
       <li>fare l'Export del file Jar, il quale dopo può essere lanciato tramite il comando <i>Java -jar</i></li>
       <li>fare play dall'interfaccia grafica dell'IDE</li>
     </ul>
   </li>
-  <li>tramite terminale, posizionarsi all'interno della cartella bin del progetto e dare il comando:
+  <li>[SECONDO METODO]tramite terminale, posizionarsi all'interno della cartella bin del progetto e dare il comando:
     <ul>
       <li><i>java start.StartPlay</i></li>
     </ul>
@@ -33,6 +33,11 @@ Come prima cosa <b>uno ed uno solo</b> dei giocatori deve fungere da <i>Servizio
 I restanti giocatori(oltre al giocatore <i>Andrea</i> di colore rosso che funge anche da <i>Servizio di Registrazione</i>, come mostrato nello screenshot precedente) non devono far altro che inserire un proprio username, L'IP del <i>Servizio di Registrazione</i> e premere il pulsante <i>"Connetti"</i>:
 <p align="center">
   <img src="/img/Slave.png" width="350"/>
+</p>
+
+Dopo che tutti i giocatori si sono registrati ed hanno premuto il pulsante <i>"Connetti"</i> il gioco inizia. Lo screenshot sottostante mostra una fase di gioco tra 2 giocatori rimasti:
+<p align="center">
+  <img src="/img/GamingDistributedTron.png" width="350"/>
 </p>
 
 # Credits
